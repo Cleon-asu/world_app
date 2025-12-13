@@ -14,6 +14,7 @@ class FluencyAssessmentScreen extends StatefulWidget {
   State<FluencyAssessmentScreen> createState() => _FluencyAssessmentScreenState();
 }
 
+
 class _FluencyAssessmentScreenState extends State<FluencyAssessmentScreen> {
   // Assessment Configuration
   final String _targetLetter = "P";
@@ -26,6 +27,7 @@ class _FluencyAssessmentScreenState extends State<FluencyAssessmentScreen> {
   bool _isListening = false;
   bool _isAssessmentActive = false;
   bool _isSpeechInitialized = false;
+  bool _isInitializing = true;
   
   // Speech Recognition
   late stt.SpeechToText _speech;
@@ -38,6 +40,62 @@ class _FluencyAssessmentScreenState extends State<FluencyAssessmentScreen> {
     super.initState();
     _speech = stt.SpeechToText();
     _initSpeech();
+  }
+
+  Future<void> _initSpeech() async {
+    setState(() {
+      _isInitializing = true;
+      _lastError = "";
+    });
+
+    bool hasPermission = await _checkPermissions();
+    if (!hasPermission) {
+      setState(() {
+        _lastError = "Microphone/Speech permissions denied.";
+        _isInitializing = false;
+      });
+      return;
+    }
+
+    try {
+      bool available = await _speech.initialize(
+        onStatus: (status) {
+          debugPrint('Speech Status: $status');
+          if (status == 'done' || status == 'notListening') {
+             setState(() => _isListening = false);
+             if (_isAssessmentActive && _secondsRemaining > 0) {
+               _startListening();
+             }
+          }
+        },
+        onError: (error) {
+          debugPrint('Speech Error: ${error.errorMsg}');
+          setState(() => _lastError = error.errorMsg);
+        },
+        debugLogging: true,
+      );
+      
+      if (available) {
+        var systemLocale = await _speech.systemLocale();
+        _currentLocaleId = systemLocale?.localeId ?? "";
+        setState(() {
+          _isSpeechInitialized = true;
+          _isInitializing = false;
+        });
+      } else {
+        setState(() {
+          _lastError = "Speech recognition not available on this device.";
+          _isInitializing = false;
+        });
+        if (mounted) _showSpeechUnavailableDialog();
+      }
+    } catch (e) {
+      setState(() {
+        _lastError = "Init Error: $e";
+        _isInitializing = false;
+      });
+      if (mounted) _showSpeechUnavailableDialog();
+    }
   }
 
   void _startListening() {
@@ -77,45 +135,41 @@ class _FluencyAssessmentScreenState extends State<FluencyAssessmentScreen> {
     setState(() => _isListening = false);
   }
 
-  // Monitor status to auto-restart if cut off prematurely
-  Future<void> _initSpeech() async {
-    bool hasPermission = await _checkPermissions();
-    if (!hasPermission) return;
 
-    try {
-      bool available = await _speech.initialize(
-        onStatus: (status) {
-          debugPrint('Speech Status: $status');
-          if (status == 'done' || status == 'notListening') {
-             setState(() => _isListening = false);
-             // Auto-restart if we are still finding words and timer > 0
-             if (_isAssessmentActive && _secondsRemaining > 0) {
-               _startListening();
-             }
-          }
-        },
-        onError: (error) {
-          setState(() => _lastError = error.errorMsg);
-          // Retry on certain errors?
-        },
-      );
-      
-      if (available) {
-        var systemLocale = await _speech.systemLocale();
-        _currentLocaleId = systemLocale?.localeId ?? "";
-        setState(() => _isSpeechInitialized = true);
-      }
-    } catch (e) {
-      setState(() => _lastError = e.toString());
-    }
+
+  void _showSpeechUnavailableDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Speech Service Missing'),
+        content: const Text(
+          'Speech recognition is not available on this device.\n\n'
+          'If you are using an Emulator, please ensure it has the "Google App" installed and enabled.\n\n'
+          'If you are on a physical device, please make sure Google Voice Typing or a similar service is enabled in settings.'
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
   }
 
   Future<bool> _checkPermissions() async {
-    var status = await Permission.microphone.status;
-    if (!status.isGranted) {
-      status = await Permission.microphone.request();
+    var microphoneStatus = await Permission.microphone.status;
+    var speechStatus = await Permission.speech.status;
+
+    if (!microphoneStatus.isGranted) {
+      microphoneStatus = await Permission.microphone.request();
     }
-    return status.isGranted;
+
+    if (!speechStatus.isGranted) {
+      speechStatus = await Permission.speech.request();
+    }
+
+    return microphoneStatus.isGranted && speechStatus.isGranted;
   }
 
   void _runAssessment() {
@@ -286,7 +340,15 @@ class _FluencyAssessmentScreenState extends State<FluencyAssessmentScreen> {
         ),
         const SizedBox(height: 40),
         
-        if (_isSpeechInitialized)
+        if (_isInitializing)
+          const Column(
+            children: [
+               CircularProgressIndicator(),
+               SizedBox(height: 10),
+               Text('Initializing microphone...'),
+            ],
+          )
+        else if (_isSpeechInitialized)
           ElevatedButton.icon(
             onPressed: _runAssessment,
             icon: const Icon(Icons.mic),
@@ -298,15 +360,19 @@ class _FluencyAssessmentScreenState extends State<FluencyAssessmentScreen> {
             ),
           )
         else
-          const Column(
+          Column(
             children: [
-               CircularProgressIndicator(),
-               SizedBox(height: 10),
-               Text('Initializing microphone...'),
+               const Text('Microphone initialization failed.', style: TextStyle(color: Colors.orange)),
+               const SizedBox(height: 10),
+               ElevatedButton.icon(
+                 onPressed: _initSpeech,
+                 icon: const Icon(Icons.refresh),
+                 label: const Text('RETRY INITIALIZATION'),
+               ),
             ],
           ),
           
-        if (_lastError.isNotEmpty) 
+        if (!_isInitializing && _lastError.isNotEmpty) 
           Padding(
             padding: const EdgeInsets.only(top: 20),
             child: Text('Error: $_lastError', style: const TextStyle(color: Colors.red)),
