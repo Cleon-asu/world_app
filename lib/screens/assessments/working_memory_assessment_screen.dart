@@ -346,44 +346,68 @@ class _WorkingMemoryAssessmentScreenState
       );
     }
 
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Text(
-          'Length: $_currentLength',
-          style: const TextStyle(color: Colors.grey),
-        ),
-        const SizedBox(height: 40),
-
-        if (_isDisplaying)
+    return Container(
+      width: double.infinity, // Make container full width
+      padding: const EdgeInsets.symmetric(
+        horizontal: 20,
+      ), // Optional: Add horizontal padding
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment:
+            CrossAxisAlignment.stretch, // Stretch children horizontally
+        children: [
           Text(
-            _currentSequence.split('').join(' '),
-            style: const TextStyle(
-              fontSize: 48,
-              fontWeight: FontWeight.bold,
-              letterSpacing: 8,
-            ),
-          )
-        else
-          Column(
-            children: [
-              const Icon(Icons.mic, size: 60, color: Colors.tealAccent),
-              const SizedBox(height: 20),
-              Text(
-                _statusMessage,
-                style: const TextStyle(fontSize: 20, color: Colors.tealAccent),
-              ),
-              const SizedBox(height: 20),
-              Text(
-                _recognizedText.isEmpty ? "..." : _recognizedText,
-                style: const TextStyle(
-                  fontSize: 30,
-                  color: Colors.yellowAccent,
-                ),
-              ),
-            ],
+            'Length: $_currentLength',
+            style: const TextStyle(color: Colors.grey),
+            textAlign: TextAlign.center, // Center text within full width
           ),
-      ],
+          const SizedBox(height: 40),
+
+          if (_isDisplaying)
+            Text(
+              _currentSequence.split('').join(' '),
+              style: const TextStyle(
+                fontSize: 48,
+                fontWeight: FontWeight.bold,
+                letterSpacing: 8,
+              ),
+              textAlign: TextAlign.center, // Center text within full width
+            )
+          else
+            Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment:
+                  CrossAxisAlignment.center, // Center icon horizontally
+              children: [
+                const Icon(Icons.mic, size: 60, color: Colors.tealAccent),
+                const SizedBox(height: 20),
+                Container(
+                  width: double.infinity, // Make text container full width
+                  child: Text(
+                    _statusMessage,
+                    style: const TextStyle(
+                      fontSize: 20,
+                      color: Colors.tealAccent,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+                const SizedBox(height: 20),
+                Container(
+                  width: double.infinity, // Make text container full width
+                  child: Text(
+                    _recognizedText.isEmpty ? "..." : _recognizedText,
+                    style: const TextStyle(
+                      fontSize: 30,
+                      color: Colors.yellowAccent,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              ],
+            ),
+        ],
+      ),
     );
   }
 }
