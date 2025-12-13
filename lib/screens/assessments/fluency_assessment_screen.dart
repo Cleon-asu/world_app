@@ -1,4 +1,3 @@
-
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -11,9 +10,9 @@ class FluencyAssessmentScreen extends StatefulWidget {
   const FluencyAssessmentScreen({super.key});
 
   @override
-  State<FluencyAssessmentScreen> createState() => _FluencyAssessmentScreenState();
+  State<FluencyAssessmentScreen> createState() =>
+      _FluencyAssessmentScreenState();
 }
-
 
 class _FluencyAssessmentScreenState extends State<FluencyAssessmentScreen> {
   // Assessment Configuration
@@ -28,12 +27,12 @@ class _FluencyAssessmentScreenState extends State<FluencyAssessmentScreen> {
   bool _isAssessmentActive = false;
   bool _isSpeechInitialized = false;
   bool _isInitializing = true;
-  
+
   // Speech Recognition
   late stt.SpeechToText _speech;
   final List<String> _detectedWords = [];
   String _lastError = "";
-  String _currentLocaleId = "";
+  final String _currentLocaleId = "en-US";
 
   @override
   void initState() {
@@ -43,12 +42,14 @@ class _FluencyAssessmentScreenState extends State<FluencyAssessmentScreen> {
   }
 
   Future<void> _initSpeech() async {
+
     setState(() {
       _isInitializing = true;
       _lastError = "";
     });
 
     bool hasPermission = await _checkPermissions();
+
     if (!hasPermission) {
       setState(() {
         _lastError = "Microphone/Speech permissions denied.";
@@ -58,43 +59,49 @@ class _FluencyAssessmentScreenState extends State<FluencyAssessmentScreen> {
     }
 
     try {
+
       bool available = await _speech.initialize(
         onStatus: (status) {
-          debugPrint('Speech Status: $status');
+          debugPrint('[STATUS CALLBACK] Speech Status: $status');
           if (status == 'done' || status == 'notListening') {
-             setState(() => _isListening = false);
-             if (_isAssessmentActive && _secondsRemaining > 0) {
-               _startListening();
-             }
+            setState(() => _isListening = false);
+
+            if (_isAssessmentActive && _secondsRemaining > 0) {
+              _startListening();
+            }
           }
         },
         onError: (error) {
-          debugPrint('Speech Error: ${error.errorMsg}');
           setState(() => _lastError = error.errorMsg);
         },
         debugLogging: true,
       );
-      
+
       if (available) {
-        var systemLocale = await _speech.systemLocale();
-        _currentLocaleId = systemLocale?.localeId ?? "";
         setState(() {
           _isSpeechInitialized = true;
           _isInitializing = false;
         });
+
       } else {
         setState(() {
           _lastError = "Speech recognition not available on this device.";
           _isInitializing = false;
         });
-        if (mounted) _showSpeechUnavailableDialog();
+
+        if (mounted) {
+          _showSpeechUnavailableDialog();
+        }
       }
     } catch (e) {
       setState(() {
         _lastError = "Init Error: $e";
         _isInitializing = false;
       });
-      if (mounted) _showSpeechUnavailableDialog();
+
+      if (mounted) {
+        _showSpeechUnavailableDialog();
+      }
     }
   }
 
@@ -106,12 +113,15 @@ class _FluencyAssessmentScreenState extends State<FluencyAssessmentScreen> {
         // Robust splitting: Space, comma, dot, newline
         final rawText = result.recognizedWords;
         final words = rawText.split(RegExp(r'[ \.,\n]+'));
-        
+
         for (var word in words) {
-          word = word.trim().replaceAll(RegExp(r'[^\w]'), ''); // Remove special chars
+          word = word.trim().replaceAll(
+            RegExp(r'[^\w]'),
+            '',
+          ); // Remove special chars
           if (word.isNotEmpty && !_detectedWords.contains(word)) {
-             // In a real alternated fluency test, we would check if it matches the pattern 
-             // (Letter vs Category) here.
+            // In a real alternated fluency test, we would check if it matches the pattern
+            // (Letter vs Category) here.
             setState(() {
               _detectedWords.add(word);
             });
@@ -124,9 +134,10 @@ class _FluencyAssessmentScreenState extends State<FluencyAssessmentScreen> {
       partialResults: true,
       cancelOnError: false,
       listenMode: stt.ListenMode.dictation,
-      onDevice: false, // Try server-based for better quality if available? Or true for speed.
+      onDevice:
+          false, // Try server-based for better quality if available? Or true for speed.
     );
-    
+
     setState(() => _isListening = true);
   }
 
@@ -134,8 +145,6 @@ class _FluencyAssessmentScreenState extends State<FluencyAssessmentScreen> {
     _speech.stop();
     setState(() => _isListening = false);
   }
-
-
 
   void _showSpeechUnavailableDialog() {
     showDialog(
@@ -145,7 +154,7 @@ class _FluencyAssessmentScreenState extends State<FluencyAssessmentScreen> {
         content: const Text(
           'Speech recognition is not available on this device.\n\n'
           'If you are using an Emulator, please ensure it has the "Google App" installed and enabled.\n\n'
-          'If you are on a physical device, please make sure Google Voice Typing or a similar service is enabled in settings.'
+          'If you are on a physical device, please make sure Google Voice Typing or a similar service is enabled in settings.',
         ),
         actions: [
           TextButton(
@@ -158,18 +167,13 @@ class _FluencyAssessmentScreenState extends State<FluencyAssessmentScreen> {
   }
 
   Future<bool> _checkPermissions() async {
-    var microphoneStatus = await Permission.microphone.status;
-    var speechStatus = await Permission.speech.status;
+    var status = await Permission.microphone.status;
 
-    if (!microphoneStatus.isGranted) {
-      microphoneStatus = await Permission.microphone.request();
+    if (!status.isGranted) {
+      status = await Permission.microphone.request();
     }
 
-    if (!speechStatus.isGranted) {
-      speechStatus = await Permission.speech.request();
-    }
-
-    return microphoneStatus.isGranted && speechStatus.isGranted;
+    return status.isGranted;
   }
 
   void _runAssessment() {
@@ -203,14 +207,14 @@ class _FluencyAssessmentScreenState extends State<FluencyAssessmentScreen> {
     setState(() {
       _isAssessmentActive = false;
     });
-    
+
     // Save Results
     final provider = Provider.of<CognitiveProvider>(context, listen: false);
-    
+
     // Simple mock scoring:
     // Score based on word count (e.g. >15 words is 100%, <5 is 0%)
     double score = (_detectedWords.length / 15 * 100).clamp(0, 100);
-    
+
     final result = ObjectiveAssessmentResult(
       domain: CognitiveDomain.fluenciaAlternant,
       score: score,
@@ -220,7 +224,7 @@ class _FluencyAssessmentScreenState extends State<FluencyAssessmentScreen> {
       completedAt: DateTime.now(),
       duration: Duration(seconds: _durationSeconds),
     );
-    
+
     provider.addAssessmentResult(result);
 
     // Show Report
@@ -238,12 +242,20 @@ class _FluencyAssessmentScreenState extends State<FluencyAssessmentScreen> {
           children: [
             Text('Words detected: ${result.correctAnswers}'),
             const SizedBox(height: 10),
-            Text('Score: ${result.score.toInt()}/100', style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+            Text(
+              'Score: ${result.score.toInt()}/100',
+              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
             const SizedBox(height: 10),
-            const Text('Detected words:', style: TextStyle(fontWeight: FontWeight.bold)),
+            const Text(
+              'Detected words:',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
             Wrap(
               spacing: 8.0,
-              children: _detectedWords.map((w) => Chip(label: Text(w))).toList(),
+              children: _detectedWords
+                  .map((w) => Chip(label: Text(w)))
+                  .toList(),
             ),
           ],
         ),
@@ -287,15 +299,12 @@ class _FluencyAssessmentScreenState extends State<FluencyAssessmentScreen> {
         padding: const EdgeInsets.all(24.0),
         child: Column(
           children: [
-             _buildHeaderHelper(),
-             const Spacer(),
-             
-             if (!_isAssessmentActive) 
-               _buildIntroView()
-             else 
-               _buildActiveView(),
-               
-             const Spacer(),
+            _buildHeaderHelper(),
+            const Spacer(),
+
+            if (!_isAssessmentActive) _buildIntroView() else _buildActiveView(),
+
+            const Spacer(),
           ],
         ),
       ),
@@ -308,7 +317,10 @@ class _FluencyAssessmentScreenState extends State<FluencyAssessmentScreen> {
       children: [
         const Icon(Icons.chat_bubble_outline, color: Colors.teal),
         const SizedBox(width: 8),
-        Text('Alternating Fluency', style: Theme.of(context).textTheme.titleMedium),
+        Text(
+          'Alternating Fluency',
+          style: Theme.of(context).textTheme.titleMedium,
+        ),
       ],
     );
   }
@@ -339,13 +351,13 @@ class _FluencyAssessmentScreenState extends State<FluencyAssessmentScreen> {
           style: TextStyle(fontStyle: FontStyle.italic, color: Colors.grey),
         ),
         const SizedBox(height: 40),
-        
+
         if (_isInitializing)
           const Column(
             children: [
-               CircularProgressIndicator(),
-               SizedBox(height: 10),
-               Text('Initializing microphone...'),
+              CircularProgressIndicator(),
+              SizedBox(height: 10),
+              Text('Initializing microphone...'),
             ],
           )
         else if (_isSpeechInitialized)
@@ -362,20 +374,26 @@ class _FluencyAssessmentScreenState extends State<FluencyAssessmentScreen> {
         else
           Column(
             children: [
-               const Text('Microphone initialization failed.', style: TextStyle(color: Colors.orange)),
-               const SizedBox(height: 10),
-               ElevatedButton.icon(
-                 onPressed: _initSpeech,
-                 icon: const Icon(Icons.refresh),
-                 label: const Text('RETRY INITIALIZATION'),
-               ),
+              const Text(
+                'Microphone initialization failed.',
+                style: TextStyle(color: Colors.orange),
+              ),
+              const SizedBox(height: 10),
+              ElevatedButton.icon(
+                onPressed: _initSpeech,
+                icon: const Icon(Icons.refresh),
+                label: const Text('RETRY INITIALIZATION'),
+              ),
             ],
           ),
-          
-        if (!_isInitializing && _lastError.isNotEmpty) 
+
+        if (!_isInitializing && _lastError.isNotEmpty)
           Padding(
             padding: const EdgeInsets.only(top: 20),
-            child: Text('Error: $_lastError', style: const TextStyle(color: Colors.red)),
+            child: Text(
+              'Error: $_lastError',
+              style: const TextStyle(color: Colors.red),
+            ),
           ),
       ],
     );
@@ -395,7 +413,7 @@ class _FluencyAssessmentScreenState extends State<FluencyAssessmentScreen> {
                 strokeWidth: 8,
                 backgroundColor: Colors.grey[800],
                 valueColor: AlwaysStoppedAnimation<Color>(
-                  _secondsRemaining < 10 ? Colors.red : Colors.teal
+                  _secondsRemaining < 10 ? Colors.red : Colors.teal,
                 ),
               ),
             ),
@@ -407,10 +425,20 @@ class _FluencyAssessmentScreenState extends State<FluencyAssessmentScreen> {
         ),
         const SizedBox(height: 40),
         if (_isListening)
-          const Text('Listening...', style: TextStyle(color: Colors.tealAccent, fontSize: 18, fontStyle: FontStyle.italic))
+          const Text(
+            'Listening...',
+            style: TextStyle(
+              color: Colors.tealAccent,
+              fontSize: 18,
+              fontStyle: FontStyle.italic,
+            ),
+          )
         else
-          const Text('Processing...', style: TextStyle(color: Colors.orange, fontSize: 18)),
-          
+          const Text(
+            'Processing...',
+            style: TextStyle(color: Colors.orange, fontSize: 18),
+          ),
+
         const SizedBox(height: 20),
         Container(
           padding: const EdgeInsets.all(16),
@@ -423,17 +451,21 @@ class _FluencyAssessmentScreenState extends State<FluencyAssessmentScreen> {
           child: Column(
             children: [
               Text(
-                'Words detected: ${_detectedWords.length}', 
-                style: const TextStyle(fontWeight: FontWeight.bold)
+                'Words detected: ${_detectedWords.length}',
+                style: const TextStyle(fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 10),
               Wrap(
                 alignment: WrapAlignment.center,
                 spacing: 8.0,
-                children: _detectedWords.map((w) => Chip(
-                  label: Text(w), 
-                  backgroundColor: Colors.teal.withValues(alpha: 0.2),
-                )).toList(),
+                children: _detectedWords
+                    .map(
+                      (w) => Chip(
+                        label: Text(w),
+                        backgroundColor: Colors.teal.withValues(alpha: 0.2),
+                      ),
+                    )
+                    .toList(),
               ),
             ],
           ),
