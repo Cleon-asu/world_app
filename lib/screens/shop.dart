@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'world_screen.dart';
+import 'home_screen.dart';
 
 // Import your other page (replace with your actual page)
 // import './other_page.dart';
@@ -180,7 +180,7 @@ class _ShopPageState extends State<ShopPage> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => WorldScreen(), // Create this page
+        builder: (context) => const HomeScreen(), // Create this page
       ),
     );
   }
