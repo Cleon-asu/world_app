@@ -25,6 +25,7 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   assets:
+    - assets/images/ 
     - assets/models/
     - assets/models/astronaut.glb
     - assets/models/robot.glb
