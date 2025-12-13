@@ -1,4 +1,3 @@
-
 import 'dart:async';
 import 'dart:math';
 import 'package:flutter/material.dart';
@@ -12,10 +11,12 @@ class AttentionAssessmentScreen extends StatefulWidget {
   const AttentionAssessmentScreen({super.key});
 
   @override
-  State<AttentionAssessmentScreen> createState() => _AttentionAssessmentScreenState();
+  State<AttentionAssessmentScreen> createState() =>
+      _AttentionAssessmentScreenState();
 }
 
-class _AttentionAssessmentScreenState extends State<AttentionAssessmentScreen> with SingleTickerProviderStateMixin {
+class _AttentionAssessmentScreenState extends State<AttentionAssessmentScreen>
+    with SingleTickerProviderStateMixin {
   // Config
   static const int _startLength = 4;
   static const int _maxLength = 9;
@@ -35,7 +36,7 @@ class _AttentionAssessmentScreenState extends State<AttentionAssessmentScreen> w
   bool _isListening = false;
   bool _showFeedback = false;
   bool _lastRoundSuccess = false;
-  
+
   // Speech
   late stt.SpeechToText _speech;
   bool _isSpeechInitialized = false;
@@ -87,7 +88,7 @@ class _AttentionAssessmentScreenState extends State<AttentionAssessmentScreen> w
     final rng = Random();
     String seq = "";
     for (int i = 0; i < _currentLength; i++) {
-        seq += rng.nextInt(10).toString(); // 0-9
+      seq += rng.nextInt(10).toString(); // 0-9
     }
     setState(() {
       _currentSequence = seq;
@@ -98,7 +99,7 @@ class _AttentionAssessmentScreenState extends State<AttentionAssessmentScreen> w
 
   void _playSequence() {
     setState(() => _isDisplaying = true);
-    
+
     // Display for limited time
     Future.delayed(Duration(seconds: _displayDuration), () {
       if (mounted && _isAssessmentActive) {
@@ -118,17 +119,17 @@ class _AttentionAssessmentScreenState extends State<AttentionAssessmentScreen> w
     }
 
     setState(() => _isListening = true);
-    
+
     _speech.listen(
       onResult: (result) {
         if (result.finalResult) {
-           _processInput(result.recognizedWords);
+          _processInput(result.recognizedWords);
         }
       },
       listenFor: const Duration(seconds: 10),
       pauseFor: const Duration(seconds: 3),
       partialResults: true,
-      onDevice: false, 
+      onDevice: false,
       listenMode: stt.ListenMode.dictation,
     );
   }
@@ -136,11 +137,11 @@ class _AttentionAssessmentScreenState extends State<AttentionAssessmentScreen> w
   void _processInput(String input) {
     // Clean input: remove non-digits
     String cleanInput = input.replaceAll(RegExp(r'[^0-9]'), '');
-    
-    // Some STT might return words "one", "two". 
+
+    // Some STT might return words "one", "two".
     // Quick map for common number words
     if (cleanInput.isEmpty && input.isNotEmpty) {
-       cleanInput = _convertWordsToDigits(input);
+      cleanInput = _convertWordsToDigits(input);
     }
 
     setState(() {
@@ -154,21 +155,31 @@ class _AttentionAssessmentScreenState extends State<AttentionAssessmentScreen> w
   String _convertWordsToDigits(String text) {
     // Very basic mapping, expansive one needed for production
     const map = {
-      'zero': '0', 'one': '1', 'two': '2', 'three': '3', 'four': '4',
-      'five': '5', 'six': '6', 'seven': '7', 'eight': '8', 'nine': '9'
+      'zero': '0',
+      'one': '1',
+      'two': '2',
+      'three': '3',
+      'four': '4',
+      'five': '5',
+      'six': '6',
+      'seven': '7',
+      'eight': '8',
+      'nine': '9',
     };
     String res = "";
     final words = text.toLowerCase().split(RegExp(r'\s+'));
     for (var w in words) {
-      if (map.containsKey(w)) res += map[w]!;
-      else if (int.tryParse(w) != null) res += w;
+      if (map.containsKey(w))
+        res += map[w]!;
+      else if (int.tryParse(w) != null)
+        res += w;
     }
     return res;
   }
 
   void _validateRound(String input) {
     bool correct = input == _currentSequence;
-    
+
     setState(() {
       _showFeedback = true;
       _lastRoundSuccess = correct;
@@ -178,7 +189,7 @@ class _AttentionAssessmentScreenState extends State<AttentionAssessmentScreen> w
     Future.delayed(const Duration(seconds: 2), () {
       if (!mounted) return;
       setState(() => _showFeedback = false);
-      
+
       if (correct) {
         // Success: Increase length, reset failures
         setState(() {
@@ -194,21 +205,21 @@ class _AttentionAssessmentScreenState extends State<AttentionAssessmentScreen> w
         });
 
         if (_attemptsForCurrentLength >= _maxAttempts) {
-             // Failed both attempts at this length
-             setState(() {
-               _consecutiveFailures++; 
-               // For Digit Span, usually you stop after failing a length completely
-               // But prompt says "Stop when 2 consecutive failures at same length" (which usually means 2 strikes total?)
-               // Usually standard is: 2 trials per span length. Discontinue after failure on BOTH trials of a given span length.
-               // So if attempts >= 2, we stop? Or we treat "consecutive failures" as across lengths?
-               // Prompt: "Stop when... 2 consecutive failures at same length"
-               // This implies if I fail attempt 1 (streak=1) and attempt 2 (streak=2) -> Stop.
-               // So if I fail max attempts for current length, I am done.
-             });
-             _finishAssessment();
+          // Failed both attempts at this length
+          setState(() {
+            _consecutiveFailures++;
+            // For Digit Span, usually you stop after failing a length completely
+            // But prompt says "Stop when 2 consecutive failures at same length" (which usually means 2 strikes total?)
+            // Usually standard is: 2 trials per span length. Discontinue after failure on BOTH trials of a given span length.
+            // So if attempts >= 2, we stop? Or we treat "consecutive failures" as across lengths?
+            // Prompt: "Stop when... 2 consecutive failures at same length"
+            // This implies if I fail attempt 1 (streak=1) and attempt 2 (streak=2) -> Stop.
+            // So if I fail max attempts for current length, I am done.
+          });
+          _finishAssessment();
         } else {
-            // Retry same length (new sequence)
-            _nextRound();
+          // Retry same length (new sequence)
+          _nextRound();
         }
       }
     });
@@ -216,17 +227,17 @@ class _AttentionAssessmentScreenState extends State<AttentionAssessmentScreen> w
 
   void _finishAssessment() {
     setState(() => _isAssessmentActive = false);
-    
+
     // Score is max length achieved (previous one if current failed)
     // If I failed length 4, score is 0? Or 3 (start-1)? Let's say max length completed.
     // If I passed length 5, then failed length 6 twice. Max is 5.
     // Logic: _currentLength is the one I performed (or tried). If validation failed, I didn't complete it.
     // But logic increments _currentLength on success. So if I am at length 6 and fail, my max was 5.
     // If I am at start length and fail, score 0.
-    
-    int maxLen = _currentLength - 1; 
+
+    int maxLen = _currentLength - 1;
     if (maxLen < 0) maxLen = 0;
-    
+
     double score = (maxLen / _maxLength * 100).clamp(0, 100);
 
     final result = ObjectiveAssessmentResult(
@@ -238,8 +249,11 @@ class _AttentionAssessmentScreenState extends State<AttentionAssessmentScreen> w
       completedAt: DateTime.now(),
       duration: Duration.zero,
     );
-    
-    Provider.of<CognitiveProvider>(context, listen: false).addAssessmentResult(result);
+
+    Provider.of<CognitiveProvider>(
+      context,
+      listen: false,
+    ).addAssessmentResult(result);
     _showResultDialog(maxLen);
   }
 
@@ -266,22 +280,31 @@ class _AttentionAssessmentScreenState extends State<AttentionAssessmentScreen> w
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Digit Span (Forward)')),
+      appBar: AppBar(
+        title: const Text('Digit Span (Forward)'),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+      ),
+      extendBodyBehindAppBar: true,
       body: Container(
+        width: MediaQuery.of(context).size.width,
+        height: MediaQuery.of(context).size.height,
         decoration: BoxDecoration(
           image: DecorationImage(
             image: AssetImage('assets/images/cosmic_background.jpg'),
             fit: BoxFit.cover,
             colorFilter: ColorFilter.mode(
-              Colors.black.withValues(
-                alpha: 0.4,
-              ), // Adjust opacity (0.0 to 1.0)
+              Colors.black.withValues(alpha: 0.4),
               BlendMode.darken,
             ),
           ),
         ),
-        padding: const EdgeInsets.all(24.0),
-        child: _isAssessmentActive ? _buildActiveView() : _buildIntroView(),
+        child: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.all(24.0),
+            child: _isAssessmentActive ? _buildActiveView() : _buildIntroView(),
+          ),
+        ),
       ),
     );
   }
@@ -302,13 +325,13 @@ class _AttentionAssessmentScreenState extends State<AttentionAssessmentScreen> w
             'Memorize the digits shown and repeat them aloud.',
             textAlign: TextAlign.center,
           ),
-           const SizedBox(height: 40),
-           _isSpeechInitialized 
-           ? ElevatedButton(
-             onPressed: _startAssessment,
-             child: const Text('START'),
-           )
-           : const CircularProgressIndicator(),
+          const SizedBox(height: 40),
+          _isSpeechInitialized
+              ? ElevatedButton(
+                  onPressed: _startAssessment,
+                  child: const Text('START'),
+                )
+              : const CircularProgressIndicator(),
         ],
       ),
     );
@@ -328,32 +351,39 @@ class _AttentionAssessmentScreenState extends State<AttentionAssessmentScreen> w
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Text('Length: $_currentLength', style: const TextStyle(color: Colors.grey)),
+        Text(
+          'Length: $_currentLength',
+          style: const TextStyle(color: Colors.grey),
+        ),
         const SizedBox(height: 40),
-        
-        if (_isDisplaying) 
+
+        if (_isDisplaying)
           // Show Sequence
-           Text(
-             _currentSequence.split('').join(' '), // Spacing
-             style: const TextStyle(fontSize: 48, fontWeight: FontWeight.bold, letterSpacing: 8),
-           )
+          Text(
+            _currentSequence.split('').join(' '), // Spacing
+            style: const TextStyle(
+              fontSize: 48,
+              fontWeight: FontWeight.bold,
+              letterSpacing: 8,
+            ),
+          )
         else
           // Show Status / Listening
-           Column(
-             children: [
-                const Icon(Icons.mic, size: 60, color: Colors.tealAccent),
-                const SizedBox(height: 20),
-                Text(
-                  _statusMessage,
-                  style: const TextStyle(fontSize: 20),
+          Column(
+            children: [
+              const Icon(Icons.mic, size: 60, color: Colors.tealAccent),
+              const SizedBox(height: 20),
+              Text(_statusMessage, style: const TextStyle(fontSize: 20)),
+              const SizedBox(height: 20),
+              Text(
+                _recognizedText.isEmpty ? "..." : _recognizedText,
+                style: const TextStyle(
+                  fontSize: 30,
+                  color: Colors.yellowAccent,
                 ),
-                 const SizedBox(height: 20),
-                 Text(
-                   _recognizedText.isEmpty ? "..." : _recognizedText,
-                   style: const TextStyle(fontSize: 30, color: Colors.yellowAccent),
-                 ),
-             ],
-           )
+              ),
+            ],
+          ),
       ],
     );
   }

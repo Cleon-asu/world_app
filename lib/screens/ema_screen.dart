@@ -13,19 +13,25 @@ class EMAScreen extends StatefulWidget {
 class _EMAScreenState extends State<EMAScreen> {
   int _currentIndex = 0;
   final PageController _pageController = PageController();
-  
+
   // Local state to track current session answers before submission
   // Or we can just use the provider directly if we want instant saves
   // For now let's use local and submit to provider
-  
-  void _handleAnswer(CognitiveProvider provider, EMAQuestion question, int score) {
+
+  void _handleAnswer(
+    CognitiveProvider provider,
+    EMAQuestion question,
+    int score,
+  ) {
     // Save response to provider
-    provider.submitEmaResponse(EMAResponse(
-      questionId: question.id,
-      score: score,
-      domain: question.domain,
-      respondedAt: DateTime.now(),
-    ));
+    provider.submitEmaResponse(
+      EMAResponse(
+        questionId: question.id,
+        score: score,
+        domain: question.domain,
+        respondedAt: DateTime.now(),
+      ),
+    );
 
     // Wait a brief moment then move to next
     Future.delayed(const Duration(milliseconds: 300), () {
@@ -50,7 +56,9 @@ class _EMAScreenState extends State<EMAScreen> {
       barrierDismissible: false,
       builder: (context) => AlertDialog(
         title: const Text('Assessment Complete'),
-        content: const Text('Thank you for completing the daily assessment. Your responses have been recorded.'),
+        content: const Text(
+          'Thank you for completing the daily assessment. Your responses have been recorded.',
+        ),
         actions: [
           ElevatedButton(
             onPressed: () {
@@ -70,18 +78,51 @@ class _EMAScreenState extends State<EMAScreen> {
     return Consumer<CognitiveProvider>(
       builder: (context, provider, child) {
         if (provider.emaCompletedToday) {
-           return Scaffold(
-            appBar: AppBar(title: const Text('Daily Assessment (EMA)'), automaticallyImplyLeading: false),
-            body: Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: const [
-                  Icon(Icons.check_circle_outline, size: 80, color: Colors.tealAccent),
-                  SizedBox(height: 20),
-                  Text('All caught up!', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
-                  SizedBox(height: 10),
-                  Text('You have completed today\'s assessment.', style: TextStyle(color: Colors.grey)),
-                ],
+          return Scaffold(
+            appBar: AppBar(
+              title: const Text('Daily Assessment (EMA)'),
+              automaticallyImplyLeading: false,
+            ),
+            body: SizedBox.expand(
+              child: Container(
+                decoration: BoxDecoration(
+                  image: DecorationImage(
+                    image: AssetImage('assets/images/cosmic_background.jpg'),
+                    fit: BoxFit.cover,
+                    colorFilter: ColorFilter.mode(
+                      Colors.black.withValues(
+                        alpha: 0.4,
+                      ), // Adjust opacity (0.0 to 1.0)
+                      BlendMode.darken,
+                    ),
+                  ),
+                ),
+                child: Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: const [
+                      Icon(
+                        Icons.check_circle_outline,
+                        size: 80,
+                        color: Colors.tealAccent,
+                      ),
+                      SizedBox(height: 20),
+                      Text(
+                        'All caught up!',
+                        style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                      SizedBox(height: 10),
+                      Text(
+                        'You have completed today\'s assessment.',
+                        style: TextStyle(color: Colors.grey),
+                      ),
+                    ],
+                  ),
+                ),
               ),
             ),
           );
@@ -98,25 +139,44 @@ class _EMAScreenState extends State<EMAScreen> {
             title: const Text('Daily Assessment (EMA)'),
             automaticallyImplyLeading: false,
           ),
-          body: Column(
-            children: [
-              _buildProgressBar(provider),
-              Expanded(
-                child: PageView.builder(
-                  controller: _pageController,
-                  physics: const NeverScrollableScrollPhysics(), // User must answer to advance
-                  onPageChanged: (index) {
-                    setState(() {
-                      _currentIndex = index;
-                    });
-                  },
-                  itemCount: provider.emaQuestions.length,
-                  itemBuilder: (context, index) {
-                    return _buildQuestionCard(provider, provider.emaQuestions[index], index);
-                  },
+          body: Container(
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage('assets/images/cosmic_background.jpg'),
+                fit: BoxFit.cover,
+                colorFilter: ColorFilter.mode(
+                  Colors.black.withValues(
+                    alpha: 0.4,
+                  ), // Adjust opacity (0.0 to 1.0)
+                  BlendMode.darken,
                 ),
               ),
-            ],
+            ),
+            child: Column(
+              children: [
+                _buildProgressBar(provider),
+                Expanded(
+                  child: PageView.builder(
+                    controller: _pageController,
+                    physics:
+                        const NeverScrollableScrollPhysics(), // User must answer to advance
+                    onPageChanged: (index) {
+                      setState(() {
+                        _currentIndex = index;
+                      });
+                    },
+                    itemCount: provider.emaQuestions.length,
+                    itemBuilder: (context, index) {
+                      return _buildQuestionCard(
+                        provider,
+                        provider.emaQuestions[index],
+                        index,
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ),
           ),
         );
       },
@@ -126,7 +186,7 @@ class _EMAScreenState extends State<EMAScreen> {
   Widget _buildProgressBar(CognitiveProvider provider) {
     double progress = (_currentIndex + 1) / provider.emaQuestions.length;
     final currentQuestion = provider.emaQuestions[_currentIndex];
-    
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: Column(
@@ -134,8 +194,12 @@ class _EMAScreenState extends State<EMAScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('Question ${_currentIndex + 1}/${provider.emaQuestions.length}'),
-              Text(currentQuestion.domain.toString().split('.').last.toUpperCase()),
+              Text(
+                'Question ${_currentIndex + 1}/${provider.emaQuestions.length}',
+              ),
+              Text(
+                currentQuestion.domain.toString().split('.').last.toUpperCase(),
+              ),
             ],
           ),
           const SizedBox(height: 8),
@@ -149,7 +213,11 @@ class _EMAScreenState extends State<EMAScreen> {
     );
   }
 
-  Widget _buildQuestionCard(CognitiveProvider provider, EMAQuestion question, int index) {
+  Widget _buildQuestionCard(
+    CognitiveProvider provider,
+    EMAQuestion question,
+    int index,
+  ) {
     return Padding(
       padding: const EdgeInsets.all(24.0),
       child: Column(
@@ -173,14 +241,18 @@ class _EMAScreenState extends State<EMAScreen> {
     );
   }
 
-  Widget _buildLikertScale(CognitiveProvider provider, EMAQuestion question, int questionIndex) {
+  Widget _buildLikertScale(
+    CognitiveProvider provider,
+    EMAQuestion question,
+    int questionIndex,
+  ) {
     try {
-        // Find if we have a response for this question in the current session
-        // Only works if we expose the session or methods to check
-        // For simplicity, we just use local state? No, we switched to provider.
-        // Let's iterate providers current session responses if accessible or just rely on selection visual feedback
-        // Actually, we don't display "previous" selection if we go back currently (PageView disabled back swipe)
-        // So we just need to handle new selection.
+      // Find if we have a response for this question in the current session
+      // Only works if we expose the session or methods to check
+      // For simplicity, we just use local state? No, we switched to provider.
+      // Let's iterate providers current session responses if accessible or just rely on selection visual feedback
+      // Actually, we don't display "previous" selection if we go back currently (PageView disabled back swipe)
+      // So we just need to handle new selection.
     } catch (_) {}
 
     return Column(
@@ -188,8 +260,16 @@ class _EMAScreenState extends State<EMAScreen> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: const [
-            Text('Strongly\nDisagree', style: TextStyle(fontSize: 10, color: Colors.grey), textAlign: TextAlign.center),
-             Text('Strongly\nAgree', style: TextStyle(fontSize: 10, color: Colors.grey), textAlign: TextAlign.center),
+            Text(
+              'Strongly\nDisagree',
+              style: TextStyle(fontSize: 10, color: Colors.grey),
+              textAlign: TextAlign.center,
+            ),
+            Text(
+              'Strongly\nAgree',
+              style: TextStyle(fontSize: 10, color: Colors.grey),
+              textAlign: TextAlign.center,
+            ),
           ],
         ),
         const SizedBox(height: 10),
@@ -197,7 +277,7 @@ class _EMAScreenState extends State<EMAScreen> {
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: List.generate(5, (i) {
             int score = i + 1;
-            
+
             return InkWell(
               onTap: () => _handleAnswer(provider, question, score),
               borderRadius: BorderRadius.circular(30),
@@ -208,10 +288,7 @@ class _EMAScreenState extends State<EMAScreen> {
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   color: Colors.grey[800],
-                  border: Border.all(
-                    color: Colors.transparent,
-                    width: 2,
-                  ),
+                  border: Border.all(color: Colors.transparent, width: 2),
                 ),
                 alignment: Alignment.center,
                 child: Text(

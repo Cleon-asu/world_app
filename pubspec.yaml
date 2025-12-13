@@ -29,9 +29,6 @@ flutter:
   assets:
     - assets/images/ 
     - assets/models/
-    - assets/models/astronaut.glb
-    - assets/models/robot.glb
-    - assets/models/tree.glb
     - assets/ema_questions.json
 
 

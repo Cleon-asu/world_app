@@ -66,15 +66,16 @@ class _ShopPageState extends State<ShopPage> {
             margin: const EdgeInsets.only(right: 16),
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
             decoration: BoxDecoration(
-              color: Colors.blue[700],
-              borderRadius: BorderRadius.circular(20),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.1),
-                  blurRadius: 4,
-                  offset: const Offset(0, 2),
+              image: DecorationImage(
+                image: AssetImage('assets/images/cosmic_background.jpg'),
+                fit: BoxFit.cover,
+                colorFilter: ColorFilter.mode(
+                  Colors.black.withValues(
+                    alpha: 0.4,
+                  ), // Adjust opacity (0.0 to 1.0)
+                  BlendMode.darken,
                 ),
-              ],
+              ),
             ),
             child: Row(
               children: [
@@ -99,78 +100,92 @@ class _ShopPageState extends State<ShopPage> {
         elevation: 2,
         centerTitle: true,
       ),
-      body: Stack(
-        children: [
-          // Main content
-          Padding(
-            padding: const EdgeInsets.all(12.0),
-            child: GridView.builder(
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                crossAxisSpacing: 12.0,
-                mainAxisSpacing: 12.0,
-                childAspectRatio: 0.8,
-              ),
-              itemCount: 12,
-              itemBuilder: (context, index) {
-                return _buildShopItem(index, context);
-              },
+      body: Container(
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage('assets/images/cosmic_background.jpg'),
+            fit: BoxFit.cover,
+            colorFilter: ColorFilter.mode(
+              Colors.black.withValues(
+                alpha: 0.4,
+              ), // Adjust opacity (0.0 to 1.0)
+              BlendMode.darken,
             ),
           ),
-
-          // Swipe detection overlay (invisible)
-          Positioned.fill(
-            child: GestureDetector(
-              behavior: HitTestBehavior.translucent,
-              onHorizontalDragStart: (details) {
-                _startX = details.globalPosition.dx;
-                _isSwiping = true;
-              },
-              onHorizontalDragUpdate: (details) {
-                if (!_isSwiping) return;
-
-                // Calculate swipe distance
-                final double currentX = details.globalPosition.dx;
-                final double deltaX = currentX - _startX;
-
-                // Optional: Visual feedback during swipe
-                if (deltaX > 50) {
-                  // You could add visual feedback here
-                }
-              },
-              onHorizontalDragEnd: (details) {
-                if (!_isSwiping) return;
-
-                final double endX = details.primaryVelocity ?? 0;
-                final double screenWidth = MediaQuery.of(context).size.width;
-
-                // Check if it's a right-to-left swipe
-                if (endX < -500 || _startX > screenWidth - 50 && endX < 0) {
-                  _handleSwipeToNavigate(context);
-                }
-
-                _isSwiping = false;
-                _startX = 0.0;
-              },
-              onHorizontalDragCancel: () {
-                _isSwiping = false;
-                _startX = 0.0;
-              },
-            ),
-          ),
-
-          // Optional: Visual indicator for swipe
-          if (_isSwiping && _startX < 50)
-            Positioned(
-              left: 0,
-              top: 0,
-              bottom: 0,
-              child: Container(
-                width: 4,
-                color: Colors.blue.withValues(alpha: 0.5),
+        ),
+        child: Stack(
+          children: [
+            // Main content
+            Padding(
+              padding: const EdgeInsets.all(12.0),
+              child: GridView.builder(
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  crossAxisSpacing: 12.0,
+                  mainAxisSpacing: 12.0,
+                  childAspectRatio: 0.8,
+                ),
+                itemCount: 4,
+                itemBuilder: (context, index) {
+                  return _buildShopItem(index, context);
+                },
               ),
             ),
-        ],
+
+            // Swipe detection overlay (invisible)
+            Positioned.fill(
+              child: GestureDetector(
+                behavior: HitTestBehavior.translucent,
+                onHorizontalDragStart: (details) {
+                  _startX = details.globalPosition.dx;
+                  _isSwiping = true;
+                },
+                onHorizontalDragUpdate: (details) {
+                  if (!_isSwiping) return;
+
+                  // Calculate swipe distance
+                  final double currentX = details.globalPosition.dx;
+                  final double deltaX = currentX - _startX;
+
+                  // Optional: Visual feedback during swipe
+                  if (deltaX > 50) {
+                    // You could add visual feedback here
+                  }
+                },
+                onHorizontalDragEnd: (details) {
+                  if (!_isSwiping) return;
+
+                  final double endX = details.primaryVelocity ?? 0;
+                  final double screenWidth = MediaQuery.of(context).size.width;
+
+                  // Check if it's a right-to-left swipe
+                  if (endX < -500 || _startX > screenWidth - 50 && endX < 0) {
+                    _handleSwipeToNavigate(context);
+                  }
+
+                  _isSwiping = false;
+                  _startX = 0.0;
+                },
+                onHorizontalDragCancel: () {
+                  _isSwiping = false;
+                  _startX = 0.0;
+                },
+              ),
+            ),
+
+            // Optional: Visual indicator for swipe
+            if (_isSwiping && _startX < 50)
+              Positioned(
+                left: 0,
+                top: 0,
+                bottom: 0,
+                child: Container(
+                  width: 4,
+                  color: Colors.blue.withValues(alpha: 0.5),
+                ),
+              ),
+          ],
+        ),
       ),
     );
   }
@@ -198,7 +213,7 @@ class _ShopPageState extends State<ShopPage> {
                       topLeft: Radius.circular(12.0),
                       topRight: Radius.circular(12.0),
                     ),
-                    color: _getItemColor(index),
+                    color: Colors.black,
                   ),
                   child: Center(
                     child: Icon(
@@ -291,24 +306,6 @@ class _ShopPageState extends State<ShopPage> {
     setState(() {
       _currencyValue = newValue;
     });
-  }
-
-  Color _getItemColor(int index) {
-    List<Color> colors = [
-      Colors.blue,
-      Colors.green,
-      Colors.orange,
-      Colors.purple,
-      Colors.red,
-      Colors.teal,
-      Colors.indigo,
-      Colors.pink,
-      Colors.amber,
-      Colors.cyan,
-      Colors.deepOrange,
-      Colors.lime,
-    ];
-    return colors[index % colors.length];
   }
 
   IconData _getItemIcon(int index) {

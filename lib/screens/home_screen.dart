@@ -60,7 +60,7 @@ class _HomeScreenState extends State<HomeScreen> {
             Center(
               child: Flutter3DViewer(
                 controller: _controller,
-                src: 'assets/models/world.glb',
+                src: 'assets/models/world_1.glb',
               ),
             ),
 

@@ -1,4 +1,3 @@
-
 import 'dart:async';
 import 'dart:math';
 import 'package:flutter/material.dart';
@@ -12,33 +11,37 @@ class WorkingMemoryAssessmentScreen extends StatefulWidget {
   const WorkingMemoryAssessmentScreen({super.key});
 
   @override
-  State<WorkingMemoryAssessmentScreen> createState() => _WorkingMemoryAssessmentScreenState();
+  State<WorkingMemoryAssessmentScreen> createState() =>
+      _WorkingMemoryAssessmentScreenState();
 }
 
-class _WorkingMemoryAssessmentScreenState extends State<WorkingMemoryAssessmentScreen> with SingleTickerProviderStateMixin {
+class _WorkingMemoryAssessmentScreenState
+    extends State<WorkingMemoryAssessmentScreen>
+    with SingleTickerProviderStateMixin {
   // Config
-  static const int _startLength = 3; // Backward is harder, start lower? Standard is often 2 or 3.
+  static const int _startLength =
+      3; // Backward is harder, start lower? Standard is often 2 or 3.
   static const int _maxLength = 8;
-  static const int _maxAttempts = 2; 
-  static const int _displayDuration = 2; 
+  static const int _maxAttempts = 2;
+  static const int _displayDuration = 2;
 
   // State
   int _currentLength = _startLength;
   String _currentSequence = "";
   int _attemptsForCurrentLength = 0;
   int _consecutiveFailures = 0;
-  
+
   bool _isAssessmentActive = false;
   bool _isDisplaying = false;
   // ignore: unused_field, because it is used in lambdas
   bool _isListening = false;
   bool _showFeedback = false;
   bool _lastRoundSuccess = false;
-  
+
   // Speech
   late stt.SpeechToText _speech;
   bool _isSpeechInitialized = false;
-  String _recognizedText = ""; 
+  String _recognizedText = "";
   String _statusMessage = "";
   String _lastError = "";
 
@@ -100,7 +103,7 @@ class _WorkingMemoryAssessmentScreenState extends State<WorkingMemoryAssessmentS
     final rng = Random();
     String seq = "";
     for (int i = 0; i < _currentLength; i++) {
-        seq += rng.nextInt(10).toString(); 
+      seq += rng.nextInt(10).toString();
     }
     setState(() {
       _currentSequence = seq;
@@ -111,7 +114,7 @@ class _WorkingMemoryAssessmentScreenState extends State<WorkingMemoryAssessmentS
 
   void _playSequence() {
     setState(() => _isDisplaying = true);
-    
+
     Future.delayed(Duration(seconds: _displayDuration), () {
       if (mounted && _isAssessmentActive) {
         setState(() {
@@ -127,11 +130,11 @@ class _WorkingMemoryAssessmentScreenState extends State<WorkingMemoryAssessmentS
     if (!_isSpeechInitialized) return;
 
     setState(() => _isListening = true);
-    
+
     _speech.listen(
       onResult: (result) {
         if (result.finalResult) {
-           _processInput(result.recognizedWords);
+          _processInput(result.recognizedWords);
         }
       },
       listenFor: const Duration(seconds: 15),
@@ -143,9 +146,9 @@ class _WorkingMemoryAssessmentScreenState extends State<WorkingMemoryAssessmentS
 
   void _processInput(String input) {
     String cleanInput = input.replaceAll(RegExp(r'[^0-9]'), '');
-    
+
     if (cleanInput.isEmpty && input.isNotEmpty) {
-       cleanInput = _convertWordsToDigits(input);
+      cleanInput = _convertWordsToDigits(input);
     }
 
     setState(() {
@@ -158,14 +161,24 @@ class _WorkingMemoryAssessmentScreenState extends State<WorkingMemoryAssessmentS
 
   String _convertWordsToDigits(String text) {
     const map = {
-      'zero': '0', 'one': '1', 'two': '2', 'three': '3', 'four': '4',
-      'five': '5', 'six': '6', 'seven': '7', 'eight': '8', 'nine': '9'
+      'zero': '0',
+      'one': '1',
+      'two': '2',
+      'three': '3',
+      'four': '4',
+      'five': '5',
+      'six': '6',
+      'seven': '7',
+      'eight': '8',
+      'nine': '9',
     };
     String res = "";
     final words = text.toLowerCase().split(RegExp(r'\s+'));
     for (var w in words) {
-      if (map.containsKey(w)) res += map[w]!;
-      else if (int.tryParse(w) != null) res += w;
+      if (map.containsKey(w))
+        res += map[w]!;
+      else if (int.tryParse(w) != null)
+        res += w;
     }
     return res;
   }
@@ -174,7 +187,7 @@ class _WorkingMemoryAssessmentScreenState extends State<WorkingMemoryAssessmentS
     // REVERSE Logic for Working Memory
     String required = _currentSequence.split('').reversed.join('');
     bool correct = input == required;
-    
+
     setState(() {
       _showFeedback = true;
       _lastRoundSuccess = correct;
@@ -183,7 +196,7 @@ class _WorkingMemoryAssessmentScreenState extends State<WorkingMemoryAssessmentS
     Future.delayed(const Duration(seconds: 2), () {
       if (!mounted) return;
       setState(() => _showFeedback = false);
-      
+
       if (correct) {
         setState(() {
           _currentLength++;
@@ -197,12 +210,12 @@ class _WorkingMemoryAssessmentScreenState extends State<WorkingMemoryAssessmentS
         });
 
         if (_attemptsForCurrentLength >= _maxAttempts) {
-             setState(() {
-               _consecutiveFailures++; 
-             });
-             _finishAssessment();
+          setState(() {
+            _consecutiveFailures++;
+          });
+          _finishAssessment();
         } else {
-            _nextRound();
+          _nextRound();
         }
       }
     });
@@ -210,23 +223,26 @@ class _WorkingMemoryAssessmentScreenState extends State<WorkingMemoryAssessmentS
 
   void _finishAssessment() {
     setState(() => _isAssessmentActive = false);
-    
-    int maxLen = _currentLength - 1; 
+
+    int maxLen = _currentLength - 1;
     if (maxLen < 0) maxLen = 0;
-    
+
     double score = (maxLen / _maxLength * 100).clamp(0, 100);
 
     final result = ObjectiveAssessmentResult(
       domain: CognitiveDomain.memoriaTreball, // Working Memory
       score: score,
       rawScore: maxLen.toDouble(),
-      correctAnswers: maxLen, 
-      totalAttempts: 0, 
+      correctAnswers: maxLen,
+      totalAttempts: 0,
       completedAt: DateTime.now(),
       duration: Duration.zero,
     );
-    
-    Provider.of<CognitiveProvider>(context, listen: false).addAssessmentResult(result);
+
+    Provider.of<CognitiveProvider>(
+      context,
+      listen: false,
+    ).addAssessmentResult(result);
     _showResultDialog(maxLen);
   }
 
@@ -254,7 +270,19 @@ class _WorkingMemoryAssessmentScreenState extends State<WorkingMemoryAssessmentS
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Digit Span (Backward)')),
-      body: Padding(
+      body: Container(
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage('assets/images/cosmic_background.jpg'),
+            fit: BoxFit.cover,
+            colorFilter: ColorFilter.mode(
+              Colors.black.withValues(
+                alpha: 0.4,
+              ), // Adjust opacity (0.0 to 1.0)
+              BlendMode.darken,
+            ),
+          ),
+        ),
         padding: const EdgeInsets.all(24.0),
         child: _isAssessmentActive ? _buildActiveView() : _buildIntroView(),
       ),
@@ -286,19 +314,22 @@ class _WorkingMemoryAssessmentScreenState extends State<WorkingMemoryAssessmentS
             'Ex: "1 - 2 - 3" -> Say "3 - 2 - 1"',
             style: TextStyle(color: Colors.grey, fontStyle: FontStyle.italic),
           ),
-           const SizedBox(height: 40),
-           _isSpeechInitialized 
-           ? ElevatedButton(
-             onPressed: _startAssessment,
-             child: const Text('START'),
-           )
-           : const CircularProgressIndicator(),
-           
-           if (_lastError.isNotEmpty)
-             Padding(
-               padding: const EdgeInsets.only(top: 20),
-               child: Text('Error: $_lastError', style: const TextStyle(color: Colors.red)),
-             ),
+          const SizedBox(height: 40),
+          _isSpeechInitialized
+              ? ElevatedButton(
+                  onPressed: _startAssessment,
+                  child: const Text('START'),
+                )
+              : const CircularProgressIndicator(),
+
+          if (_lastError.isNotEmpty)
+            Padding(
+              padding: const EdgeInsets.only(top: 20),
+              child: Text(
+                'Error: $_lastError',
+                style: const TextStyle(color: Colors.red),
+              ),
+            ),
         ],
       ),
     );
@@ -318,30 +349,40 @@ class _WorkingMemoryAssessmentScreenState extends State<WorkingMemoryAssessmentS
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Text('Length: $_currentLength', style: const TextStyle(color: Colors.grey)),
+        Text(
+          'Length: $_currentLength',
+          style: const TextStyle(color: Colors.grey),
+        ),
         const SizedBox(height: 40),
-        
-        if (_isDisplaying) 
-           Text(
-             _currentSequence.split('').join(' '), 
-             style: const TextStyle(fontSize: 48, fontWeight: FontWeight.bold, letterSpacing: 8),
-           )
+
+        if (_isDisplaying)
+          Text(
+            _currentSequence.split('').join(' '),
+            style: const TextStyle(
+              fontSize: 48,
+              fontWeight: FontWeight.bold,
+              letterSpacing: 8,
+            ),
+          )
         else
-           Column(
-             children: [
-                const Icon(Icons.mic, size: 60, color: Colors.tealAccent),
-                const SizedBox(height: 20),
-                Text(
-                  _statusMessage,
-                  style: const TextStyle(fontSize: 20, color: Colors.tealAccent),
+          Column(
+            children: [
+              const Icon(Icons.mic, size: 60, color: Colors.tealAccent),
+              const SizedBox(height: 20),
+              Text(
+                _statusMessage,
+                style: const TextStyle(fontSize: 20, color: Colors.tealAccent),
+              ),
+              const SizedBox(height: 20),
+              Text(
+                _recognizedText.isEmpty ? "..." : _recognizedText,
+                style: const TextStyle(
+                  fontSize: 30,
+                  color: Colors.yellowAccent,
                 ),
-                 const SizedBox(height: 20),
-                 Text(
-                   _recognizedText.isEmpty ? "..." : _recognizedText,
-                   style: const TextStyle(fontSize: 30, color: Colors.yellowAccent),
-                 ),
-             ],
-           )
+              ),
+            ],
+          ),
       ],
     );
   }

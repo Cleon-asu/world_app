@@ -1,4 +1,3 @@
-
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -15,7 +14,7 @@ class ProcessingSpeedScreen extends StatefulWidget {
 class _ProcessingSpeedScreenState extends State<ProcessingSpeedScreen> {
   // Config
   static const int _totalNumbers = 25;
-  
+
   // State
   List<int> _numbers = [];
   int _currentNumber = 1;
@@ -24,7 +23,7 @@ class _ProcessingSpeedScreenState extends State<ProcessingSpeedScreen> {
   int _elapsedMillis = 0;
   int _errors = 0;
   bool _isGameActive = false;
-  
+
   @override
   void initState() {
     super.initState();
@@ -49,7 +48,9 @@ class _ProcessingSpeedScreenState extends State<ProcessingSpeedScreen> {
     _timer = Timer.periodic(const Duration(milliseconds: 100), (timer) {
       if (_startTime != null) {
         setState(() {
-          _elapsedMillis = DateTime.now().difference(_startTime!).inMilliseconds;
+          _elapsedMillis = DateTime.now()
+              .difference(_startTime!)
+              .inMilliseconds;
         });
       }
     });
@@ -72,7 +73,10 @@ class _ProcessingSpeedScreenState extends State<ProcessingSpeedScreen> {
         _errors++;
       });
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Wrong number!'), duration: Duration(milliseconds: 300)),
+        const SnackBar(
+          content: Text('Wrong number!'),
+          duration: Duration(milliseconds: 300),
+        ),
       );
     }
   }
@@ -80,7 +84,7 @@ class _ProcessingSpeedScreenState extends State<ProcessingSpeedScreen> {
   void _finishGame() {
     _timer?.cancel();
     _isGameActive = false;
-    
+
     // Score calculation
     // Speed score: (25 / seconds) * 10
     double seconds = _elapsedMillis / 1000.0;
@@ -96,7 +100,10 @@ class _ProcessingSpeedScreenState extends State<ProcessingSpeedScreen> {
       duration: Duration(milliseconds: _elapsedMillis),
     );
 
-    Provider.of<CognitiveProvider>(context, listen: false).addAssessmentResult(result);
+    Provider.of<CognitiveProvider>(
+      context,
+      listen: false,
+    ).addAssessmentResult(result);
     _showResultDialog(seconds, _errors, score);
   }
 
@@ -109,16 +116,19 @@ class _ProcessingSpeedScreenState extends State<ProcessingSpeedScreen> {
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-             Text('Time: ${seconds.toStringAsFixed(2)}s', style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
-             Text('Errors: $errors', style: const TextStyle(color: Colors.red)),
-             Text('Score: ${score.toInt()}/100'),
+            Text(
+              'Time: ${seconds.toStringAsFixed(2)}s',
+              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            ),
+            Text('Errors: $errors', style: const TextStyle(color: Colors.red)),
+            Text('Score: ${score.toInt()}/100'),
           ],
         ),
         actions: [
           ElevatedButton(
             onPressed: () {
-               Navigator.pop(context);
-               Navigator.pop(context);
+              Navigator.pop(context);
+              Navigator.pop(context);
             },
             child: const Text('Finish'),
           ),
@@ -137,35 +147,54 @@ class _ProcessingSpeedScreenState extends State<ProcessingSpeedScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Connect the Numbers')),
-      body: Column(
-        children: [
-          // Header
-          Container(
-            padding: const EdgeInsets.all(16),
-            color: Colors.grey[900],
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'Find: $_currentNumber',
-                  style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.tealAccent),
-                ),
-                Text(
-                   _formatTime(_elapsedMillis),
-                   style: const TextStyle(fontSize: 24, fontFamily: 'monospace'),
-                ),
-              ],
+      body: Container(
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage('assets/images/cosmic_background.jpg'),
+            fit: BoxFit.cover,
+            colorFilter: ColorFilter.mode(
+              Colors.black.withValues(
+                alpha: 0.4,
+              ), // Adjust opacity (0.0 to 1.0)
+              BlendMode.darken,
             ),
           ),
-          
-          Expanded(
-            child: _isGameActive ? _buildGrid() : _buildIntro(),
-          ),
-        ],
+        ),
+        child: Column(
+          children: [
+            // Header
+            Container(
+              padding: const EdgeInsets.all(16),
+              color: Colors.grey[900],
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Find: $_currentNumber',
+                    style: const TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.tealAccent,
+                    ),
+                  ),
+                  Text(
+                    _formatTime(_elapsedMillis),
+                    style: const TextStyle(
+                      fontSize: 24,
+                      fontFamily: 'monospace',
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            Expanded(child: _isGameActive ? _buildGrid() : _buildIntro()),
+          ],
+        ),
       ),
     );
   }
-  
+
   String _formatTime(int millis) {
     int seconds = (millis / 1000).truncate();
     int deciseconds = ((millis % 1000) / 100).truncate();
@@ -198,7 +227,10 @@ class _ProcessingSpeedScreenState extends State<ProcessingSpeedScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 16),
               backgroundColor: Colors.teal,
             ),
-            child: const Text('START TEST', style: TextStyle(fontSize: 18, color: Colors.white)),
+            child: const Text(
+              'START TEST',
+              style: TextStyle(fontSize: 18, color: Colors.white),
+            ),
           ),
         ],
       ),
@@ -208,13 +240,13 @@ class _ProcessingSpeedScreenState extends State<ProcessingSpeedScreen> {
   Widget _buildGrid() {
     return LayoutBuilder(
       builder: (context, constraints) {
-        // Simple random positioning is messy, let's use a GridView but maybe randomized cells? 
+        // Simple random positioning is messy, let's use a GridView but maybe randomized cells?
         // No, prompt says "randomly positioned". A custom Stack with random coords is best for "randomly positioned",
-        // but GridView is cleaner for UI. 
+        // but GridView is cleaner for UI.
         // "Number Connection Test" (TMT A) is usually scattered.
         // Let's implement a clean 5x5 GridView for accessibility and usability on phones.
         // The numbers are already shuffled in _numbers list.
-        
+
         return GridView.builder(
           padding: const EdgeInsets.all(16),
           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
@@ -227,28 +259,39 @@ class _ProcessingSpeedScreenState extends State<ProcessingSpeedScreen> {
             final number = _numbers[index];
             final isNext = number == _currentNumber;
             final isCompleted = number < _currentNumber;
-            
+
             return GestureDetector(
               onTap: () => _handleTap(number),
               child: AnimatedContainer(
-                 duration: const Duration(milliseconds: 200),
-                 decoration: BoxDecoration(
-                   color: isCompleted ? Colors.grey[800] : (isNext ? Colors.teal : Colors.blueGrey[700]),
-                   shape: BoxShape.circle,
-                   border: isNext ? Border.all(color: Colors.white, width: 2) : null,
-                   boxShadow: isNext ? [BoxShadow(color: Colors.tealAccent.withValues(alpha: 0.5), blurRadius: 8)] : null,
-                 ),
-                 alignment: Alignment.center,
-                 child: isCompleted 
-                   ? const Icon(Icons.check, color: Colors.grey)
-                   : Text(
-                       '$number',
-                       style: TextStyle(
-                         fontSize: 20, 
-                         fontWeight: FontWeight.bold,
-                         color: isNext ? Colors.white : Colors.white70
-                       ),
-                   ),
+                duration: const Duration(milliseconds: 200),
+                decoration: BoxDecoration(
+                  color: isCompleted
+                      ? Colors.grey[800]
+                      : (isNext ? Colors.teal : Colors.blueGrey[700]),
+                  shape: BoxShape.circle,
+                  border: isNext
+                      ? Border.all(color: Colors.white, width: 2)
+                      : null,
+                  boxShadow: isNext
+                      ? [
+                          BoxShadow(
+                            color: Colors.tealAccent.withValues(alpha: 0.5),
+                            blurRadius: 8,
+                          ),
+                        ]
+                      : null,
+                ),
+                alignment: Alignment.center,
+                child: isCompleted
+                    ? const Icon(Icons.check, color: Colors.grey)
+                    : Text(
+                        '$number',
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: isNext ? Colors.white : Colors.white70,
+                        ),
+                      ),
               ),
             );
           },

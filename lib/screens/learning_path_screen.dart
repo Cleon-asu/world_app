@@ -17,49 +17,90 @@ class LearningPathScreen extends StatelessWidget {
             title: const Text('My Treatment Path'),
             automaticallyImplyLeading: false,
           ),
-          body: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _buildSectionHeader('Recommended for You'),
-                if (recommendations.isEmpty)
-                   const Padding(
-                     padding: EdgeInsets.symmetric(horizontal: 16),
-                     child: Text('Complete assessments to get personalized recommendations.', style: TextStyle(color: Colors.grey)),
-                   )
-                else
-                   ...recommendations.map((r) => _buildRecommendationCard(
-                     context,
-                     title: r['title'] as String,
-                     description: r['description'] as String,
-                     duration: r['duration'] as String,
-                     color: r['color'] as Color,
-                     icon: r['icon'] as IconData,
-                   )),
-
-                 const SizedBox(height: 20),
-                _buildSectionHeader('Daily Wellness'),
-                SizedBox(
-                  height: 180,
-                  child: ListView(
-                    scrollDirection: Axis.horizontal,
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    children: [
-                      _buildLifestyleCard('Sleep Hygiene', 'Tips for rest', Icons.bed),
-                      _buildLifestyleCard('Nutrition', 'Brain foods', Icons.restaurant),
-                      _buildLifestyleCard('Social', 'Connect', Icons.people),
-                      _buildLifestyleCard('Exercise', 'Cardio', Icons.directions_run),
-                      _buildLifestyleCard('Learning', 'New skills', Icons.school),
-                    ],
-                  ),
+          body: Container(
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage('assets/images/cosmic_background.jpg'),
+                fit: BoxFit.cover,
+                colorFilter: ColorFilter.mode(
+                  Colors.black.withValues(
+                    alpha: 0.4,
+                  ), // Adjust opacity (0.0 to 1.0)
+                  BlendMode.darken,
                 ),
+              ),
+            ),
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildSectionHeader('Recommended for You'),
+                  if (recommendations.isEmpty)
+                    const Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 16),
+                      child: Text(
+                        'Complete assessments to get personalized recommendations.',
+                        style: TextStyle(color: Colors.grey),
+                      ),
+                    )
+                  else
+                    ...recommendations.map(
+                      (r) => _buildRecommendationCard(
+                        context,
+                        title: r['title'] as String,
+                        description: r['description'] as String,
+                        duration: r['duration'] as String,
+                        color: r['color'] as Color,
+                        icon: r['icon'] as IconData,
+                      ),
+                    ),
 
-                const SizedBox(height: 20),
-                _buildSectionHeader('Library'),
-                 _buildLibraryItem('Understanding Cognitive Decline', 'Psychoeducation - 3 min'),
-                 _buildLibraryItem('Strategies for Memory', 'Tips & Tricks - 6 min'),
-                 _buildLibraryItem('The Role of Exercise', 'Science - 4 min'),
-              ],
+                  const SizedBox(height: 20),
+                  _buildSectionHeader('Daily Wellness'),
+                  SizedBox(
+                    height: 180,
+                    child: ListView(
+                      scrollDirection: Axis.horizontal,
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      children: [
+                        _buildLifestyleCard(
+                          'Sleep Hygiene',
+                          'Tips for rest',
+                          Icons.bed,
+                        ),
+                        _buildLifestyleCard(
+                          'Nutrition',
+                          'Brain foods',
+                          Icons.restaurant,
+                        ),
+                        _buildLifestyleCard('Social', 'Connect', Icons.people),
+                        _buildLifestyleCard(
+                          'Exercise',
+                          'Cardio',
+                          Icons.directions_run,
+                        ),
+                        _buildLifestyleCard(
+                          'Learning',
+                          'New skills',
+                          Icons.school,
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  const SizedBox(height: 20),
+                  _buildSectionHeader('Library'),
+                  _buildLibraryItem(
+                    'Understanding Cognitive Decline',
+                    'Psychoeducation - 3 min',
+                  ),
+                  _buildLibraryItem(
+                    'Strategies for Memory',
+                    'Tips & Tricks - 6 min',
+                  ),
+                  _buildLibraryItem('The Role of Exercise', 'Science - 4 min'),
+                ],
+              ),
             ),
           ),
         );
@@ -67,13 +108,15 @@ class LearningPathScreen extends StatelessWidget {
     );
   }
 
-  List<Map<String, dynamic>> _generateRecommendations(CognitiveProvider provider) {
+  List<Map<String, dynamic>> _generateRecommendations(
+    CognitiveProvider provider,
+  ) {
     final recommendations = <Map<String, dynamic>>[];
-    
+
     // Check latest scores and assume <60 is a deficit
     // Note: Scores default to 0.0 if not taken. We might want to skip recs if not taken (or recommend taking them).
     // For this prototype, if score is > 0 and < 60 -> Recommend.
-    
+
     double attn = provider.getLatestScore(CognitiveDomain.atencion);
     if (attn > 0 && attn < 60) {
       recommendations.add({
@@ -85,11 +128,14 @@ class LearningPathScreen extends StatelessWidget {
       });
     }
 
-    double speed = provider.getLatestScore(CognitiveDomain.velocitatProcessament);
+    double speed = provider.getLatestScore(
+      CognitiveDomain.velocitatProcessament,
+    );
     if (speed > 0 && speed < 60) {
       recommendations.add({
         'title': 'Processing Speed: Basic Drills',
-        'description': 'Improve your reaction time with these simple visual tasks.',
+        'description':
+            'Improve your reaction time with these simple visual tasks.',
         'duration': '5 min',
         'color': Colors.orange.shade800,
         'icon': Icons.speed,
@@ -106,16 +152,16 @@ class LearningPathScreen extends StatelessWidget {
         'icon': Icons.chat,
       });
     }
-    
+
     // Fallback if healthy or no data
     if (recommendations.isEmpty) {
-        recommendations.add({
-          'title': 'Daily Cognitive Workout',
-          'description': 'Keep your brain sharp with a mix of exercises.',
-          'duration': '15 min',
-          'color': Colors.teal.shade800,
-          'icon': Icons.fitness_center,
-        });
+      recommendations.add({
+        'title': 'Daily Cognitive Workout',
+        'description': 'Keep your brain sharp with a mix of exercises.',
+        'duration': '15 min',
+        'color': Colors.teal.shade800,
+        'icon': Icons.fitness_center,
+      });
     }
 
     return recommendations;
@@ -146,7 +192,11 @@ class LearningPathScreen extends StatelessWidget {
         color: Colors.grey[900],
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
-          BoxShadow(color: Colors.black26, blurRadius: 4, offset: const Offset(0, 2)),
+          BoxShadow(
+            color: Colors.black26,
+            blurRadius: 4,
+            offset: const Offset(0, 2),
+          ),
         ],
       ),
       child: Row(
@@ -160,9 +210,7 @@ class LearningPathScreen extends StatelessWidget {
                 bottomLeft: Radius.circular(12),
               ),
             ),
-            child: Center(
-              child: Icon(icon, size: 40, color: Colors.white),
-            ),
+            child: Center(child: Icon(icon, size: 40, color: Colors.white)),
           ),
           Expanded(
             child: Padding(
@@ -173,7 +221,10 @@ class LearningPathScreen extends StatelessWidget {
                 children: [
                   Text(
                     title,
-                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -191,7 +242,10 @@ class LearningPathScreen extends StatelessWidget {
                       const SizedBox(width: 4),
                       Text(
                         duration,
-                        style: const TextStyle(fontSize: 12, color: Colors.teal),
+                        style: const TextStyle(
+                          fontSize: 12,
+                          color: Colors.teal,
+                        ),
                       ),
                       const Spacer(),
                       const Icon(Icons.play_circle_fill, color: Colors.white70),
@@ -224,7 +278,10 @@ class LearningPathScreen extends StatelessWidget {
           ),
           const SizedBox(height: 12),
           Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
-          Text(subtitle, style: const TextStyle(fontSize: 10, color: Colors.grey)),
+          Text(
+            subtitle,
+            style: const TextStyle(fontSize: 10, color: Colors.grey),
+          ),
         ],
       ),
     );
