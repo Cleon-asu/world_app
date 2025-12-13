@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'world_provider.dart';
-import 'screens/world_screen.dart';
+import 'screens/home_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -10,10 +10,13 @@ void main() async {
 
 class WorldBuilderApp extends StatelessWidget {
   const WorldBuilderApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
-      providers: [ChangeNotifierProvider(create: (_) => WorldProvider())],
+      providers: [
+        ChangeNotifierProvider(create: (_) => WorldProvider()),
+      ],
       child: MaterialApp(
         title: '3D World Builder',
         theme: ThemeData(
@@ -25,7 +28,7 @@ class WorldBuilderApp extends StatelessWidget {
             secondary: Colors.cyan,
           ),
         ),
-        home: const WorldScreen(),
+        home: const HomeScreen(),
         debugShowCheckedModeBanner: false,
       ),
     );
