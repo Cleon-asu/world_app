@@ -38,34 +38,42 @@ class _WorldScreenState extends State<WorldScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-  backgroundColor: Colors.black,
-  body: Stack(
-    children: [
-      Center(
-        child: Flutter3DViewer(
-          controller: _controller,
-          src: 'assets/models/astronaut.glb',
+      body: Container(
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage('assets/images/cosmic_background.jpg'),
+            fit: BoxFit.cover,
+            colorFilter: ColorFilter.mode(
+              Colors.black.withValues(alpha: 0.4), // Adjust opacity (0.0 to 1.0)
+              BlendMode.darken,
+            ),
+          ),
         ),
-      ),
-
-      // 🔵 Navigation button
-      Positioned(
-        bottom: 24,
-        right: 24,
-        child: FloatingActionButton(
-          child: const Icon(Icons.arrow_forward),
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (_) => const ShopPage(),
+        child: Stack(
+          children: [
+            Center(
+              child: Flutter3DViewer(
+                controller: _controller,
+                src: 'assets/models/astronaut.glb',
               ),
-            );
-          },
+            ),
+
+            Positioned(
+              bottom: 24,
+              right: 24,
+              child: FloatingActionButton(
+                child: const Icon(Icons.arrow_forward),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const ShopPage()),
+                  );
+                },
+              ),
+            ),
+          ],
         ),
       ),
-    ],
-  ),
-);
+    );
   }
 }
