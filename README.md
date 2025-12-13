@@ -1,3 +1,3 @@
-# world_app
+Mindopia,
 
-A new Flutter project.
+Visualize the universe of your mind
