@@ -267,10 +267,6 @@ class LearningPathScreen extends StatelessWidget {
         final assignedPaths = _generateRecommendations(provider);
 
         return Scaffold(
-          appBar: AppBar(
-            title: const Text('My Treatment Path'),
-            automaticallyImplyLeading: false,
-          ),
           body: Container(
             decoration: BoxDecoration(
               image: DecorationImage(

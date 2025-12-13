@@ -288,7 +288,6 @@ class _FluencyAssessmentScreenState extends State<FluencyAssessmentScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Verbal Fluency')),
       body: Container(
         decoration: BoxDecoration(
           image: DecorationImage(

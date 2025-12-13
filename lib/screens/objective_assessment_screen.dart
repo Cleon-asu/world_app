@@ -15,10 +15,6 @@ class ObjectiveAssessmentScreen extends StatelessWidget {
     return Consumer<CognitiveProvider>(
       builder: (context, provider, child) {
         return Scaffold(
-          appBar: AppBar(
-            title: const Text('Objective Assessments'),
-            automaticallyImplyLeading: false,
-          ),
           body: Container(
             decoration: BoxDecoration(
               image: DecorationImage(

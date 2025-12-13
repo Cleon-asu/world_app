@@ -151,7 +151,6 @@ class _ProcessingSpeedScreenState extends State<ProcessingSpeedScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Connect the Numbers')),
       body: Container(
         decoration: BoxDecoration(
           image: DecorationImage(

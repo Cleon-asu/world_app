@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_3d_controller/flutter_3d_controller.dart';
 import 'package:flutter/foundation.dart';
 import 'shop.dart';
-import 'quests.dart';
 import 'objective_assessment_screen.dart';
 import 'ema_screen.dart';
 import 'learning_path_screen.dart';
@@ -113,15 +112,6 @@ class _HomeScreenState extends State<HomeScreen> {
                         MaterialPageRoute(
                           builder: (_) => const ObjectiveAssessmentScreen(),
                         ),
-                      );
-                    },
-                  ),
-                  FloatingActionButton(
-                    child: const Icon(Icons.list_alt),
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (_) => const QuestsPage()),
                       );
                     },
                   ),

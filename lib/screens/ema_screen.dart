@@ -79,10 +79,6 @@ class _EMAScreenState extends State<EMAScreen> {
       builder: (context, provider, child) {
         if (provider.emaCompletedToday) {
           return Scaffold(
-            appBar: AppBar(
-              title: const Text('Daily Assessment (EMA)'),
-              automaticallyImplyLeading: false,
-            ),
             body: SizedBox.expand(
               child: Container(
                 decoration: BoxDecoration(
@@ -135,10 +131,6 @@ class _EMAScreenState extends State<EMAScreen> {
         }
 
         return Scaffold(
-          appBar: AppBar(
-            title: const Text('Daily Assessment (EMA)'),
-            automaticallyImplyLeading: false,
-          ),
           body: Container(
             decoration: BoxDecoration(
               image: DecorationImage(

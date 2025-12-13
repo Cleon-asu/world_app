@@ -27,55 +27,11 @@ class _ShopPageState extends State<ShopPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            ElevatedButton(
-              onPressed: () => _updateCurrency(_currencyValue + 10),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.green[700],
-                foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 20,
-                  vertical: 10,
-                ),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                elevation: 3,
-                shadowColor: Colors.green.withValues(alpha: 0.5),
-              ),
-              child: const Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(Icons.add, size: 18),
-                  SizedBox(width: 6),
-                  Text(
-                    '+10 Coins',
-                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-        // Currency display in the AppBar on the right
+        automaticallyImplyLeading: false,
         actions: [
           Container(
             margin: const EdgeInsets.only(right: 16),
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-            decoration: BoxDecoration(
-              image: DecorationImage(
-                image: AssetImage('assets/images/cosmic_background.jpg'),
-                fit: BoxFit.cover,
-                colorFilter: ColorFilter.mode(
-                  Colors.black.withValues(
-                    alpha: 0.4,
-                  ), // Adjust opacity (0.0 to 1.0)
-                  BlendMode.darken,
-                ),
-              ),
-            ),
             child: Row(
               children: [
                 const Icon(
@@ -340,23 +296,5 @@ class _ShopPageState extends State<ShopPage> {
       'assets/images/world_image_4.JPG',
     ];
     return imagePaths[index];
-  }
-}
-
-// Placeholder page for navigation - replace with your actual page
-class NextPage extends StatelessWidget {
-  const NextPage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('New Page')),
-      body: const Center(
-        child: Text(
-          'You navigated here by swiping!',
-          style: TextStyle(fontSize: 20),
-        ),
-      ),
-    );
   }
 }
