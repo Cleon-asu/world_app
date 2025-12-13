@@ -14,6 +14,7 @@ class CognitiveProvider extends ChangeNotifier {
   bool _emaCompletedToday = false;
   // ignore: unused_field, because it is used
   DateTime? _lastEmaCompletion;
+  final Map<CognitiveDomain, double> _lastEmaScores = {};
 
   List<ObjectiveAssessmentResult> get assessmentHistory => _assessmentHistory;
   List<EMAQuestion> get emaQuestions => _emaQuestions;
@@ -62,6 +63,17 @@ class CognitiveProvider extends ChangeNotifier {
     if (_currentSessionResponses.length >= _emaQuestions.length) {
       _emaCompletedToday = true;
       _lastEmaCompletion = DateTime.now();
+
+      // Calculate scores
+      _lastEmaScores.clear();
+      for (var domain in CognitiveDomain.values) {
+        final domainResponses = _currentSessionResponses.where((r) => r.domain == domain).toList();
+        if (domainResponses.isNotEmpty) {
+          final double avg = domainResponses.map((r) => r.score).reduce((a, b) => a + b) / domainResponses.length;
+          _lastEmaScores[domain] = avg;
+        }
+      }
+
       // In a real app, save to persistence here
       _currentSessionResponses.clear();
       notifyListeners();
@@ -76,10 +88,6 @@ class CognitiveProvider extends ChangeNotifier {
   // User Prompt: "Threshold >= 3.0 avg = deficit present"
   // Let's keep raw avg 1-5 for internal logic, but expose a normalized risk score if needed.
   double getSubjectiveScore(CognitiveDomain domain) {
-    // This needs to be persisted or aggregated. For now, we return a mock or simplified calculation
-    // assuming we have stored responses somewhere permanent.
-    // For this prototype, we'll assume NO history if session cleared.
-    // TODO: Implement persistent storage for EMA history.
-    return 0.0; 
+    return _lastEmaScores[domain] ?? 0.0; 
   }
 }

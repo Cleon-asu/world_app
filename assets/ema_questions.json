@@ -2,51 +2,63 @@
   "questions": [
     {
       "id": "att_001",
-      "text": "I went to a room and couldn't remember why when I got there",
+      "text": "I went into a room and forgot what I went there for",
       "domain": "attention",
       "order": 1
     },
     {
-      "id": "att_002",
-      "text": "I had difficulty focusing on what was being said in a conversation",
-      "domain": "attention",
+      "id": "spd_001",
+      "text": "I took longer than usual to complete a task I used to do faster",
+      "domain": "processingSpeed",
       "order": 2
     },
     {
-      "id": "spd_001",
-      "text": "I took longer than normal to complete a task I used to do quickly",
-      "domain": "processingSpeed",
+      "id": "flu_001",
+      "text": "I couldn't find the right word or said the wrong one by mistake",
+      "domain": "fluencia",
       "order": 3
     },
     {
-      "id": "spd_002",
-      "text": "I felt my thinking was slower than usual",
-      "domain": "processingSpeed",
+      "id": "att_002",
+      "text": "I lost the thread of the conversation while talking to someone",
+      "domain": "attention",
       "order": 4
     },
     {
       "id": "mem_001",
-      "text": "I had trouble remembering recent events",
+      "text": "I forgot something I was told recently",
       "domain": "memory",
       "order": 5
     },
     {
       "id": "mem_002",
-      "text": "I forgot appointments or plans",
+      "text": "I had trouble remembering information I already knew",
       "domain": "memory",
       "order": 6
     },
     {
-      "id": "flu_001",
-      "text": "I struggled to find the right words when speaking",
-      "domain": "fluencia",
+      "id": "exe_001",
+      "text": "I struggled to make a decision that used to be easy for me",
+      "domain": "executiveFunctions",
       "order": 7
     },
     {
-      "id": "flu_002",
-      "text": "I felt like I was losing my train of thought frequently",
-      "domain": "fluencia",
+      "id": "exe_002",
+      "text": "I had difficulty planning my day",
+      "domain": "executiveFunctions",
       "order": 8
+    },
+    {
+      "id": "exe_003",
+      "text": "I felt brain fog",
+      "domain": "executiveFunctions",
+      "order": 9
+    },
+    {
+      "id": "spd_002",
+      "text": "I felt like I was thinking slower today",
+      "domain": "processingSpeed",
+      "order": 10
     }
   ]
 }

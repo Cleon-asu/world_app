@@ -336,7 +336,7 @@ class _ShopPageState extends State<ShopPage> {
     List<String> imagePaths = [
       'assets/images/world_image_1.JPG',
       'assets/images/world_image_2.JPG',
-      'assets/images/world_image_1.JPG',
+      'assets/images/world_image_3.JPG',
       'assets/images/world_image_4.JPG',
     ];
     return imagePaths[index];

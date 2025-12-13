@@ -88,7 +88,11 @@ class _ProcessingSpeedScreenState extends State<ProcessingSpeedScreen> {
     // Score calculation
     // Speed score: (25 / seconds) * 10
     double seconds = _elapsedMillis / 1000.0;
-    double score = (25 / seconds * 10).clamp(0, 100);
+    
+    double score = 100;
+    if (seconds >25){
+      score = (score - (seconds*2)).clamp(0, 100);;
+    }
 
     final result = ObjectiveAssessmentResult(
       domain: CognitiveDomain.velocitatProcessament,
