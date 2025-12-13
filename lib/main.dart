@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'providers/cognitive_provider.dart';
 import 'world_provider.dart';
 import 'screens/home_screen.dart';
 
@@ -16,6 +17,7 @@ class WorldBuilderApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => WorldProvider()),
+        ChangeNotifierProvider(create: (_) => CognitiveProvider()..loadQuestions()),
       ],
       child: MaterialApp(
         title: '3D World Builder',
