@@ -6,6 +6,7 @@ import 'quests.dart';
 import 'objective_assessment_screen.dart';
 import 'ema_screen.dart';
 import 'learning_path_screen.dart';
+import 'package:world_app/data/currency_database.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -17,10 +18,12 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   late final Flutter3DController _controller;
   late final VoidCallback _modelLoadedListener;
+  int _worldLevel = 1;
 
   @override
   void initState() {
     super.initState();
+    _loadWorldLevel();
 
     _controller = Flutter3DController();
 
@@ -41,6 +44,10 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _loadWorldLevel();
+    });
+
     return Scaffold(
       body: Container(
         decoration: BoxDecoration(
@@ -48,9 +55,7 @@ class _HomeScreenState extends State<HomeScreen> {
             image: AssetImage('assets/images/cosmic_background.jpg'),
             fit: BoxFit.cover,
             colorFilter: ColorFilter.mode(
-              Colors.black.withValues(
-                alpha: 0.4,
-              ), // Adjust opacity (0.0 to 1.0)
+              Colors.black.withValues(alpha: 0.4),
               BlendMode.darken,
             ),
           ),
@@ -60,7 +65,7 @@ class _HomeScreenState extends State<HomeScreen> {
             Center(
               child: Flutter3DViewer(
                 controller: _controller,
-                src: 'assets/models/world_1.glb',
+                src: _getModelPath(_worldLevel),
               ),
             ),
 
@@ -127,5 +132,22 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
     );
+  }
+
+  void _loadWorldLevel() {
+    final value = CurrencyStorage.getWorldLevel();
+    setState(() {
+      _worldLevel = value;
+    });
+  }
+
+  String _getModelPath(int worldLevel) {
+    List<String> modelPaths = [
+      'assets/models/world_1.glb',
+      'assets/models/world_2.glb',
+      'assets/models/world_3.glb',
+      'assets/models/world_4.glb',
+    ];
+    return modelPaths[worldLevel-1];
   }
 }

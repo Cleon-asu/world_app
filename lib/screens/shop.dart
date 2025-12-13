@@ -2,9 +2,6 @@ import 'package:flutter/material.dart';
 import 'home_screen.dart';
 import 'package:world_app/data/currency_database.dart';
 
-// Import your other page (replace with your actual page)
-// import './other_page.dart';
-
 class ShopPage extends StatefulWidget {
   const ShopPage({super.key});
 
@@ -17,11 +14,13 @@ class _ShopPageState extends State<ShopPage> {
   double _startX = 0.0;
   bool _isSwiping = false;
   int _currencyValue = 0;
+  int _worldLevel = 1;
 
   @override
   void initState() {
     super.initState();
     _loadCurrencyValue();
+    _loadWorldLevel();
   }
 
   @override
@@ -216,10 +215,13 @@ class _ShopPageState extends State<ShopPage> {
                     color: Colors.black,
                   ),
                   child: Center(
-                    child: Icon(
-                      _getItemIcon(index),
-                      size: 60.0,
-                      color: Colors.white,
+                    child: SizedBox(
+                      width: 60.0,
+                      height: 60.0,
+                      child: Image.asset(
+                        _getItemImagePath(index),
+                        fit: BoxFit.contain,
+                      ),
                     ),
                   ),
                 ),
@@ -261,6 +263,8 @@ class _ShopPageState extends State<ShopPage> {
     if (_currencyValue >= (index + 1) * 10) {
       int newValue = _currencyValue - ((index + 1) * 10);
       _updateCurrency(newValue);
+
+      _updateWorldLevel(index + 1);
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -308,21 +312,34 @@ class _ShopPageState extends State<ShopPage> {
     });
   }
 
-  IconData _getItemIcon(int index) {
-    List<IconData> icons = [
-      Icons.rocket,
-      Icons.airplanemode_active,
-      Icons.directions_car,
-      Icons.computer,
-      Icons.phone_android,
-      Icons.headset,
-      Icons.sports_esports,
-      Icons.camera_alt,
-      Icons.speaker,
-      Icons.tv,
-      Icons.tablet,
+  void _loadWorldLevel() {
+    final value = CurrencyStorage.getWorldLevel();
+    setState(() {
+      _worldLevel = value;
+    });
+  }
+
+  Future<void> _updateWorldLevel(int newValue) async {
+    await CurrencyStorage.setWorldLevel(newValue);
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: const Text('World level upgraded!'),
+        duration: const Duration(milliseconds: 800),
+        backgroundColor: Colors.green,
+        behavior: SnackBarBehavior.floating,
+      ),
+    );
+  }
+
+  String _getItemImagePath(int index) {
+    List<String> imagePaths = [
+      'assets/images/world_image_1.JPG',
+      'assets/images/world_image_2.JPG',
+      'assets/images/world_image_1.JPG',
+      'assets/images/world_image_4.JPG',
     ];
-    return icons[index % icons.length];
+    return imagePaths[index];
   }
 }
 
