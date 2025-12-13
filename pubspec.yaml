@@ -16,6 +16,8 @@ dependencies:
   model_viewer_plus: ^1.10.0
   provider: ^6.1.5+1
   uuid: ^4.5.2
+  permission_handler: ^11.0.0
+  speech_to_text: ^6.4.0
 
 dev_dependencies:
   flutter_test:
@@ -30,5 +32,6 @@ flutter:
     - assets/models/astronaut.glb
     - assets/models/robot.glb
     - assets/models/tree.glb
+    - assets/ema_questions.json
 
 

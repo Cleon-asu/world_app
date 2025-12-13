@@ -1,0 +1,52 @@
+{
+  "questions": [
+    {
+      "id": "att_001",
+      "text": "I went to a room and couldn't remember why when I got there",
+      "domain": "attention",
+      "order": 1
+    },
+    {
+      "id": "att_002",
+      "text": "I had difficulty focusing on what was being said in a conversation",
+      "domain": "attention",
+      "order": 2
+    },
+    {
+      "id": "spd_001",
+      "text": "I took longer than normal to complete a task I used to do quickly",
+      "domain": "processingSpeed",
+      "order": 3
+    },
+    {
+      "id": "spd_002",
+      "text": "I felt my thinking was slower than usual",
+      "domain": "processingSpeed",
+      "order": 4
+    },
+    {
+      "id": "mem_001",
+      "text": "I had trouble remembering recent events",
+      "domain": "memory",
+      "order": 5
+    },
+    {
+      "id": "mem_002",
+      "text": "I forgot appointments or plans",
+      "domain": "memory",
+      "order": 6
+    },
+    {
+      "id": "flu_001",
+      "text": "I struggled to find the right words when speaking",
+      "domain": "fluencia",
+      "order": 7
+    },
+    {
+      "id": "flu_002",
+      "text": "I felt like I was losing my train of thought frequently",
+      "domain": "fluencia",
+      "order": 8
+    }
+  ]
+}
