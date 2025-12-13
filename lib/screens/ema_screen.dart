@@ -174,8 +174,6 @@ class _EMAScreenState extends State<EMAScreen> {
   }
 
   Widget _buildLikertScale(CognitiveProvider provider, EMAQuestion question, int questionIndex) {
-    // Check if we have an answer already
-    int? currentAnswer;
     try {
         // Find if we have a response for this question in the current session
         // Only works if we expose the session or methods to check
@@ -199,8 +197,6 @@ class _EMAScreenState extends State<EMAScreen> {
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: List.generate(5, (i) {
             int score = i + 1;
-            // Visual feedback could be improved if we tracked state, but for now simple tap
-            bool isSelected = false; // We don't persist visual state in this simple version
             
             return InkWell(
               onTap: () => _handleAnswer(provider, question, score),

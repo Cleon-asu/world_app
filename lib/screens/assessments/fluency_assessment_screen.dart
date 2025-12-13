@@ -217,7 +217,19 @@ class _FluencyAssessmentScreenState extends State<FluencyAssessmentScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Verbal Fluency')),
-      body: Padding(
+      body: Container(
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage('assets/images/cosmic_background.jpg'),
+            fit: BoxFit.cover,
+            colorFilter: ColorFilter.mode(
+              Colors.black.withValues(
+                alpha: 0.4,
+              ), // Adjust opacity (0.0 to 1.0)
+              BlendMode.darken,
+            ),
+          ),
+        ),
         padding: const EdgeInsets.all(24.0),
         child: Column(
           children: [

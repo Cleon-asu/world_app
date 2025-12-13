@@ -30,6 +30,7 @@ class _WorkingMemoryAssessmentScreenState extends State<WorkingMemoryAssessmentS
   
   bool _isAssessmentActive = false;
   bool _isDisplaying = false;
+  // ignore: unused_field, because it is used in lambdas
   bool _isListening = false;
   bool _showFeedback = false;
   bool _lastRoundSuccess = false;

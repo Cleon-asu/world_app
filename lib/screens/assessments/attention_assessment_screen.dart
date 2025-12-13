@@ -31,6 +31,7 @@ class _AttentionAssessmentScreenState extends State<AttentionAssessmentScreen> w
 
   bool _isAssessmentActive = false;
   bool _isDisplaying = false;
+  // ignore: unused_field, because it is used in lambdas
   bool _isListening = false;
   bool _showFeedback = false;
   bool _lastRoundSuccess = false;
@@ -266,7 +267,19 @@ class _AttentionAssessmentScreenState extends State<AttentionAssessmentScreen> w
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Digit Span (Forward)')),
-      body: Padding(
+      body: Container(
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage('assets/images/cosmic_background.jpg'),
+            fit: BoxFit.cover,
+            colorFilter: ColorFilter.mode(
+              Colors.black.withValues(
+                alpha: 0.4,
+              ), // Adjust opacity (0.0 to 1.0)
+              BlendMode.darken,
+            ),
+          ),
+        ),
         padding: const EdgeInsets.all(24.0),
         child: _isAssessmentActive ? _buildActiveView() : _buildIntroView(),
       ),

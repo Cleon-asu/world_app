@@ -23,7 +23,7 @@ class _ShopPageState extends State<ShopPage> {
     super.initState();
     _loadCurrencyValue();
   }
-  
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -32,11 +32,14 @@ class _ShopPageState extends State<ShopPage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             ElevatedButton(
-              onPressed: () => _updateCurrency(_currencyValue + 10) ,
+              onPressed: () => _updateCurrency(_currencyValue + 10),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.green[700],
                 foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 10,
+                ),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(20),
                 ),
@@ -50,10 +53,7 @@ class _ShopPageState extends State<ShopPage> {
                   SizedBox(width: 6),
                   Text(
                     '+10 Coins',
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
-                    ),
+                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
                   ),
                 ],
               ),
@@ -79,7 +79,7 @@ class _ShopPageState extends State<ShopPage> {
             child: Row(
               children: [
                 const Icon(
-                  Icons.monetization_on,
+                  Icons.star_border_outlined,
                   color: Colors.white,
                   size: 18,
                 ),
@@ -117,7 +117,7 @@ class _ShopPageState extends State<ShopPage> {
               },
             ),
           ),
-          
+
           // Swipe detection overlay (invisible)
           Positioned.fill(
             child: GestureDetector(
@@ -128,11 +128,11 @@ class _ShopPageState extends State<ShopPage> {
               },
               onHorizontalDragUpdate: (details) {
                 if (!_isSwiping) return;
-                
+
                 // Calculate swipe distance
                 final double currentX = details.globalPosition.dx;
                 final double deltaX = currentX - _startX;
-                
+
                 // Optional: Visual feedback during swipe
                 if (deltaX > 50) {
                   // You could add visual feedback here
@@ -140,15 +140,15 @@ class _ShopPageState extends State<ShopPage> {
               },
               onHorizontalDragEnd: (details) {
                 if (!_isSwiping) return;
-                
+
                 final double endX = details.primaryVelocity ?? 0;
                 final double screenWidth = MediaQuery.of(context).size.width;
-                
+
                 // Check if it's a right-to-left swipe
                 if (endX < -500 || _startX > screenWidth - 50 && endX < 0) {
                   _handleSwipeToNavigate(context);
                 }
-                
+
                 _isSwiping = false;
                 _startX = 0.0;
               },
@@ -158,7 +158,7 @@ class _ShopPageState extends State<ShopPage> {
               },
             ),
           ),
-          
+
           // Optional: Visual indicator for swipe
           if (_isSwiping && _startX < 50)
             Positioned(
@@ -178,9 +178,7 @@ class _ShopPageState extends State<ShopPage> {
   Widget _buildShopItem(int index, BuildContext context) {
     return Card(
       elevation: 4.0,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12.0),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
       child: InkWell(
         onTap: () {
           _handleItemClick(index, context);
@@ -227,7 +225,7 @@ class _ShopPageState extends State<ShopPage> {
                     ),
                     const SizedBox(height: 4.0),
                     Text(
-                      '\$${((index + 1) * 9.99).toStringAsFixed(2)}',
+                      '\$${((index + 1) * 10).toStringAsFixed(2)}',
                       style: TextStyle(
                         fontSize: 14.0,
                         color: Colors.green[700],
@@ -245,13 +243,18 @@ class _ShopPageState extends State<ShopPage> {
   }
 
   void _handleItemClick(int index, BuildContext context) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Item ${index + 1} selected'),
-        duration: const Duration(milliseconds: 500),
-        behavior: SnackBarBehavior.floating,
-      ),
-    );
+    if (_currencyValue >= (index + 1) * 10) {
+      int newValue = _currencyValue - ((index + 1) * 10);
+      _updateCurrency(newValue);
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Item purchased successfully'),
+          duration: const Duration(milliseconds: 500),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+    }
   }
 
   void _handleSwipeToNavigate(BuildContext context) {
@@ -333,9 +336,7 @@ class NextPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('New Page'),
-      ),
+      appBar: AppBar(title: const Text('New Page')),
       body: const Center(
         child: Text(
           'You navigated here by swiping!',

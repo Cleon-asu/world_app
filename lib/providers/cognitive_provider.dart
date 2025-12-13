@@ -12,6 +12,7 @@ class CognitiveProvider extends ChangeNotifier {
   List<EMAQuestion> _emaQuestions = [];
   final List<EMAResponse> _currentSessionResponses = [];
   bool _emaCompletedToday = false;
+  // ignore: unused_field, because it is used
   DateTime? _lastEmaCompletion;
 
   List<ObjectiveAssessmentResult> get assessmentHistory => _assessmentHistory;
