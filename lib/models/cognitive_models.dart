@@ -9,8 +9,8 @@ enum CognitiveDomain {
 
 class ObjectiveAssessmentResult {
   final CognitiveDomain domain;
-  final double score; // 0-100
-  final double rawScore; // metric specific (seconds, count, etc)
+  final int score; // 0-100
+  final int rawScore; // metric specific (seconds, count, etc)
   final int correctAnswers;
   final int totalAttempts; // or total sequences
   final DateTime completedAt;

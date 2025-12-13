@@ -223,8 +223,8 @@ class _FluencyAssessmentScreenState extends State<FluencyAssessmentScreen> {
 
     final result = ObjectiveAssessmentResult(
       domain: CognitiveDomain.fluenciaAlternant,
-      score: score,
-      rawScore: _detectedWords.length.toDouble(),
+      score: score.toInt(),
+      rawScore: _detectedWords.length,
       correctAnswers: matchingCount, // Only count words starting with target letter
       totalAttempts: _detectedWords.length,
       completedAt: DateTime.now(),

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../providers/cognitive_provider.dart';
@@ -85,14 +86,14 @@ class _ProcessingSpeedScreenState extends State<ProcessingSpeedScreen> {
     _timer?.cancel();
     _isGameActive = false;
 
-    // Score calculation
-    // Speed score: (25 / seconds) * 10
-    double seconds = _elapsedMillis / 1000.0;
+    int errorPenalty = 4;
+    int timePenalty = 10;
+
+    int seconds = (_elapsedMillis / 1000.0).toInt();
     
-    double score = 100;
-    if (seconds >25){
-      score = (score - (seconds*2)).clamp(0, 100);;
-    }
+    int maxScore = 100;
+    
+    int score = max(0, (maxScore - (seconds/20).toInt()*timePenalty - _errors*errorPenalty));
 
     final result = ObjectiveAssessmentResult(
       domain: CognitiveDomain.velocitatProcessament,
@@ -111,7 +112,7 @@ class _ProcessingSpeedScreenState extends State<ProcessingSpeedScreen> {
     _showResultDialog(seconds, _errors, score);
   }
 
-  void _showResultDialog(double seconds, int errors, double score) {
+  void _showResultDialog(int seconds, int errors, int score) {
     showDialog(
       context: context,
       barrierDismissible: false,

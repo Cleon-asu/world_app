@@ -171,7 +171,7 @@ class ObjectiveAssessmentScreen extends StatelessWidget {
   Widget _buildResultCard(
     BuildContext context, {
     required String title,
-    required double score,
+    required int score,
     required String description,
     required IconData icon,
     required VoidCallback onTap,

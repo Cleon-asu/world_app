@@ -242,8 +242,8 @@ class _AttentionAssessmentScreenState extends State<AttentionAssessmentScreen>
 
     final result = ObjectiveAssessmentResult(
       domain: CognitiveDomain.atencion,
-      score: score,
-      rawScore: maxLen.toDouble(),
+      score: score.toInt(),
+      rawScore: maxLen,
       correctAnswers: maxLen, // approximating "sequences" to length
       totalAttempts: 0, // not tracking total sequences here for now
       completedAt: DateTime.now(),

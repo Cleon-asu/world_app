@@ -228,12 +228,12 @@ class _WorkingMemoryAssessmentScreenState
     int maxLen = _currentLength - 1;
     if (maxLen < 0) maxLen = 0;
 
-    double score = (maxLen / _maxLength * 100).clamp(0, 100);
+    int score = (maxLen / _maxLength * 100).clamp(0, 100).toInt();
 
     final result = ObjectiveAssessmentResult(
       domain: CognitiveDomain.memoriaTreball, // Working Memory
       score: score,
-      rawScore: maxLen.toDouble(),
+      rawScore: maxLen,
       correctAnswers: maxLen,
       totalAttempts: 0,
       completedAt: DateTime.now(),

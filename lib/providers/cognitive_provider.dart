@@ -43,9 +43,9 @@ class CognitiveProvider extends ChangeNotifier {
   }
 
   // Helper to get latest score for a domain
-  double getLatestScore(CognitiveDomain domain) {
+  int getLatestScore(CognitiveDomain domain) {
     final domainResults = _assessmentHistory.where((r) => r.domain == domain).toList();
-    if (domainResults.isEmpty) return 0.0;
+    if (domainResults.isEmpty) return 0;
     domainResults.sort((a, b) => b.completedAt.compareTo(a.completedAt));
     return domainResults.first.score;
   }
