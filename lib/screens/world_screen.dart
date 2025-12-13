@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_3d_controller/flutter_3d_controller.dart';
 import 'package:flutter/foundation.dart';
 import 'shop.dart';
+import 'quests.dart';
 
 class WorldScreen extends StatefulWidget {
   const WorldScreen({super.key});
@@ -54,19 +55,33 @@ class _WorldScreenState extends State<WorldScreen> {
             Center(
               child: Flutter3DViewer(
                 controller: _controller,
-                src: 'assets/models/astronaut.glb',
+                src: 'assets/models/world.glb',
               ),
             ),
 
             Positioned(
-              bottom: 24,
-              right: 24,
+              top: 60,
+              left: 40,
               child: FloatingActionButton(
-                child: const Icon(Icons.arrow_forward),
+                child: const Icon(Icons.shopify),
                 onPressed: () {
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (_) => const ShopPage()),
+                  );
+                },
+              ),
+            ),
+
+            Positioned(
+              top: 60,
+              right: 40,
+              child: FloatingActionButton(
+                child: const Icon(Icons.list_alt),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const QuestsPage()),
                   );
                 },
               ),
