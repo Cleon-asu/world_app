@@ -55,7 +55,7 @@ class _WorkingMemoryAssessmentScreenState extends State<WorkingMemoryAssessmentS
 
     try {
       bool available = await _speech.initialize(
-        onError: (e) => setState(() => _lastError = e.errorMsg),
+        onError: (e) => setState(() => _statusMessage = "Error: ${e.errorMsg}"),
       );
       if (available) {
         setState(() => _isSpeechInitialized = true);
@@ -137,7 +137,8 @@ class _WorkingMemoryAssessmentScreenState extends State<WorkingMemoryAssessmentS
       listenFor: const Duration(seconds: 15),
       pauseFor: const Duration(seconds: 3),
       partialResults: true,
-      // onDevice: false, // Cleaned up deprecation
+      onDevice: false,
+      listenMode: stt.ListenMode.dictation,
     );
   }
 

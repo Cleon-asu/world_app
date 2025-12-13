@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
@@ -16,13 +17,13 @@ class FluencyAssessmentScreen extends StatefulWidget {
 
 class _FluencyAssessmentScreenState extends State<FluencyAssessmentScreen> {
   // Assessment Configuration
-  final String _targetLetter = "P";
+  late final String _targetLetter;
   final String _targetCategory = "Fruits/Vegetables";
-  final int _durationSeconds = 60;
+  final int _durationSeconds = 30;
 
   // State
   Timer? _timer;
-  int _secondsRemaining = 60;
+  int _secondsRemaining = 30;
   bool _isListening = false;
   bool _isAssessmentActive = false;
   bool _isSpeechInitialized = false;
@@ -38,6 +39,7 @@ class _FluencyAssessmentScreenState extends State<FluencyAssessmentScreen> {
   void initState() {
     super.initState();
     _speech = stt.SpeechToText();
+    _targetLetter = String.fromCharCode(Random().nextInt(26) + 65);
     _initSpeech();
   }
 
@@ -212,14 +214,18 @@ class _FluencyAssessmentScreenState extends State<FluencyAssessmentScreen> {
     final provider = Provider.of<CognitiveProvider>(context, listen: false);
 
     // Simple mock scoring:
-    // Score based on word count (e.g. >15 words is 100%, <5 is 0%)
-    double score = (_detectedWords.length / 15 * 100).clamp(0, 100);
+    int matchingCount = _detectedWords
+        .where((w) => w.toUpperCase().startsWith(_targetLetter))
+        .length;
+
+    // Score based on matching word count
+    double score = (matchingCount / 20 * 100).clamp(0, 100);
 
     final result = ObjectiveAssessmentResult(
       domain: CognitiveDomain.fluenciaAlternant,
       score: score,
       rawScore: _detectedWords.length.toDouble(),
-      correctAnswers: _detectedWords.length, // Assuming all valid for prototype
+      correctAnswers: matchingCount, // Only count words starting with target letter
       totalAttempts: _detectedWords.length,
       completedAt: DateTime.now(),
       duration: Duration(seconds: _durationSeconds),
@@ -339,16 +345,16 @@ class _FluencyAssessmentScreenState extends State<FluencyAssessmentScreen> {
           style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 40),
-        const Text(
-          'Say a word starting with the letter P, then a word from the category (Fruits/Veg), then switch back.',
+        Text(
+          'Say a word starting with the letter $_targetLetter, then a word from the category (Fruits/Veg), then switch back.',
           textAlign: TextAlign.center,
-          style: TextStyle(fontSize: 16),
+          style: const TextStyle(fontSize: 16),
         ),
         const SizedBox(height: 10),
-        const Text(
-          'e.g. "Pear" (P) -> "Apple" (Fruit) -> "Potato" (P)...',
+        Text(
+          'e.g. "Pear" ($_targetLetter) -> "Apple" (Fruit) -> "Potato" ($_targetLetter)...',
           textAlign: TextAlign.center,
-          style: TextStyle(fontStyle: FontStyle.italic, color: Colors.grey),
+          style: const TextStyle(fontStyle: FontStyle.italic, color: Colors.grey),
         ),
         const SizedBox(height: 40),
 
