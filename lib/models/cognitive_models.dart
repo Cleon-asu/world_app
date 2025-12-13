@@ -3,7 +3,8 @@ enum CognitiveDomain {
   fluenciaAlternant,
   atencion,
   memoriaTreball,
-  velocitatProcessament
+  velocitatProcessament,
+  funcionsExecutives
 }
 
 class ObjectiveAssessmentResult {
@@ -53,6 +54,9 @@ class EMAQuestion {
         break;
       case 'fluencia':
         domain = CognitiveDomain.fluenciaAlternant;
+        break;
+      case 'executiveFunctions':
+        domain = CognitiveDomain.funcionsExecutives;
         break;
       default:
         domain = CognitiveDomain.atencion;
