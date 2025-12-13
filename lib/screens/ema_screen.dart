@@ -81,6 +81,7 @@ class _EMAScreenState extends State<EMAScreen> {
           return Scaffold(
             body: SizedBox.expand(
               child: Container(
+                padding: EdgeInsets.all(20.0),
                 decoration: BoxDecoration(
                   image: DecorationImage(
                     image: AssetImage('assets/images/cosmic_background.jpg'),
@@ -180,7 +181,7 @@ class _EMAScreenState extends State<EMAScreen> {
     final currentQuestion = provider.emaQuestions[_currentIndex];
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 40),
       child: Column(
         children: [
           Row(

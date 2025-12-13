@@ -152,6 +152,7 @@ class _ProcessingSpeedScreenState extends State<ProcessingSpeedScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
+        padding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 40.0),
         decoration: BoxDecoration(
           image: DecorationImage(
             image: AssetImage('assets/images/cosmic_background.jpg'),

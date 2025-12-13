@@ -281,6 +281,7 @@ class _AttentionAssessmentScreenState extends State<AttentionAssessmentScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
+        padding: const EdgeInsets.all(20.0),
         width: MediaQuery.of(context).size.width,
         height: MediaQuery.of(context).size.height,
         decoration: BoxDecoration(

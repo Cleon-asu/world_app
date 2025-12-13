@@ -289,6 +289,7 @@ class _FluencyAssessmentScreenState extends State<FluencyAssessmentScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
+        padding: const EdgeInsets.all(20.0),
         decoration: BoxDecoration(
           image: DecorationImage(
             image: AssetImage('assets/images/cosmic_background.jpg'),
@@ -301,7 +302,6 @@ class _FluencyAssessmentScreenState extends State<FluencyAssessmentScreen> {
             ),
           ),
         ),
-        padding: const EdgeInsets.all(24.0),
         child: Column(
           children: [
             _buildHeaderHelper(),

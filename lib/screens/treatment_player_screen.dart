@@ -63,7 +63,8 @@ class _TreatmentPlayerScreenState extends State<TreatmentPlayerScreen> {
           appBar: AppBar(
             title: Text(widget.video.title),
           ),
-          body: Column(
+          body: Padding(padding: const EdgeInsets.all(20.0),
+          child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               player,
@@ -90,7 +91,7 @@ class _TreatmentPlayerScreenState extends State<TreatmentPlayerScreen> {
                 ),
               ),
             ],
-          ),
+          ),)
         );
       },
     );

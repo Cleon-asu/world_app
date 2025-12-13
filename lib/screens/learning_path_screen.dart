@@ -267,39 +267,41 @@ class LearningPathScreen extends StatelessWidget {
         final assignedPaths = _generateRecommendations(provider);
 
         return Scaffold(
-          body: Container(
-            decoration: BoxDecoration(
-              image: DecorationImage(
-                image: AssetImage('assets/images/cosmic_background.jpg'),
-                fit: BoxFit.cover,
-                colorFilter: ColorFilter.mode(
-                  Colors.black.withValues(
-                    alpha: 0.4,
-                  ), // Adjust opacity (0.0 to 1.0)
-                  BlendMode.darken,
+          body: SizedBox.expand(
+            child: Container(
+              decoration: BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage('assets/images/cosmic_background.jpg'),
+                  fit: BoxFit.cover,
+                  colorFilter: ColorFilter.mode(
+                    Colors.black.withValues(alpha: 0.4),
+                    BlendMode.darken,
+                  ),
                 ),
               ),
-            ),
-            child: SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildSectionHeader('Recommended for You'),
-                  if (assignedPaths.isEmpty)
-                    const Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 16),
-                      child: Text(
-                        'Complete assessments to get personalized recommendations.',
-                        style: TextStyle(color: Colors.grey),
-                      ),
-                    )
-                  else
-                    ...assignedPaths.map(
-                      (path) => _buildPathCard(context, path),
-                    ),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 40.0),
+                child: SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      if (assignedPaths.isEmpty)
+                        const Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 16),
+                          child: Text(
+                            'Complete assessments to get personalized recommendations.',
+                            style: TextStyle(color: Colors.white70),
+                          ),
+                        )
+                      else
+                        ...assignedPaths.map(
+                          (path) => _buildPathCard(context, path),
+                        ),
 
-                  const SizedBox(height: 20),
-                ],
+                      const SizedBox(height: 20),
+                    ],
+                  ),
+                ),
               ),
             ),
           ),
@@ -357,25 +359,18 @@ class LearningPathScreen extends StatelessWidget {
     return assignedPaths;
   }
 
-  Widget _buildSectionHeader(String title) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-      child: Text(
-        title,
-        style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-      ),
-    );
-  }
-
   Widget _buildPathCard(BuildContext context, TreatmentPath path) {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: BoxDecoration(
-        color: Colors.grey[900],
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: const [
-          BoxShadow(color: Colors.black26, blurRadius: 4, offset: Offset(0, 2)),
-        ],
+        image: DecorationImage(
+          image: AssetImage('assets/images/cosmic_background.jpg'),
+          fit: BoxFit.cover,
+          colorFilter: ColorFilter.mode(
+            Colors.black.withValues(alpha: 0.4),
+            BlendMode.darken,
+          ),
+        ),
       ),
       child: Column(
         children: [

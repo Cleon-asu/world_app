@@ -16,6 +16,7 @@ class ObjectiveAssessmentScreen extends StatelessWidget {
       builder: (context, provider, child) {
         return Scaffold(
           body: Container(
+            padding: EdgeInsets.all(20.0),
             decoration: BoxDecoration(
               image: DecorationImage(
                 image: AssetImage('assets/images/cosmic_background.jpg'),

@@ -271,6 +271,7 @@ class _WorkingMemoryAssessmentScreenState
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
+        padding: EdgeInsets.all(20.0),
         decoration: BoxDecoration(
           image: DecorationImage(
             image: AssetImage('assets/images/cosmic_background.jpg'),
@@ -283,7 +284,6 @@ class _WorkingMemoryAssessmentScreenState
             ),
           ),
         ),
-        padding: const EdgeInsets.all(24.0),
         child: _isAssessmentActive ? _buildActiveView() : _buildIntroView(),
       ),
     );

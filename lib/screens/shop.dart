@@ -172,8 +172,8 @@ class _ShopPageState extends State<ShopPage> {
                   ),
                   child: Center(
                     child: SizedBox(
-                      width: 60.0,
-                      height: 60.0,
+                      width: 100.0,
+                      height: 100.0,
                       child: Image.asset(
                         _getItemImagePath(index),
                         fit: BoxFit.contain,
