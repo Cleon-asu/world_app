@@ -300,7 +300,7 @@ class _ShopPageState extends State<ShopPage> {
     // Show snackbar feedback
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: const Text('+10 Coins Added!'),
+        content: const Text('Currency updated!'),
         duration: const Duration(milliseconds: 800),
         backgroundColor: Colors.green,
         behavior: SnackBarBehavior.floating,
@@ -324,7 +324,7 @@ class _ShopPageState extends State<ShopPage> {
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: const Text('World level upgraded!'),
+        content: const Text('World level changed!'),
         duration: const Duration(milliseconds: 800),
         backgroundColor: Colors.green,
         behavior: SnackBarBehavior.floating,
