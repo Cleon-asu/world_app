@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'home_screen.dart';
+import 'package:world_app/data/currency_database.dart';
 
 // Import your other page (replace with your actual page)
 // import './other_page.dart';
@@ -15,10 +16,89 @@ class _ShopPageState extends State<ShopPage> {
   // Variables for swipe detection
   double _startX = 0.0;
   bool _isSwiping = false;
+  int _currencyValue = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadCurrencyValue();
+  }
   
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            ElevatedButton(
+              onPressed: () => _updateCurrency(_currencyValue + 10) ,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.green[700],
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                elevation: 3,
+                shadowColor: Colors.green.withValues(alpha: 0.5),
+              ),
+              child: const Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.add, size: 18),
+                  SizedBox(width: 6),
+                  Text(
+                    '+10 Coins',
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+        // Currency display in the AppBar on the right
+        actions: [
+          Container(
+            margin: const EdgeInsets.only(right: 16),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+            decoration: BoxDecoration(
+              color: Colors.blue[700],
+              borderRadius: BorderRadius.circular(20),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.1),
+                  blurRadius: 4,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            child: Row(
+              children: [
+                const Icon(
+                  Icons.monetization_on,
+                  color: Colors.white,
+                  size: 18,
+                ),
+                const SizedBox(width: 6),
+                Text(
+                  '$_currencyValue',
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+        elevation: 2,
+        centerTitle: true,
+      ),
       body: Stack(
         children: [
           // Main content
@@ -183,6 +263,31 @@ class _ShopPageState extends State<ShopPage> {
         builder: (context) => const HomeScreen(), // Create this page
       ),
     );
+  }
+
+  void _loadCurrencyValue() {
+    final value = CurrencyStorage.getCurrency();
+    setState(() {
+      _currencyValue = value;
+    });
+  }
+
+  Future<void> _updateCurrency(int newValue) async {
+    await CurrencyStorage.setCurrency(newValue);
+
+    // Show snackbar feedback
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: const Text('+10 Coins Added!'),
+        duration: const Duration(milliseconds: 800),
+        backgroundColor: Colors.green,
+        behavior: SnackBarBehavior.floating,
+      ),
+    );
+
+    setState(() {
+      _currencyValue = newValue;
+    });
   }
 
   Color _getItemColor(int index) {
