@@ -1,8 +1,10 @@
 # Mindopia
 
-<p align="center">
-	<img src="docs/screenshots/logo.jpg" alt="Mindopia logo" width="160" />
-</p>
+
+
+https://github.com/user-attachments/assets/8489455b-d795-459f-95e8-dc4da944d377
+
+
 
 Ecological, personalized cognitive assessment & support for people living with cancer.
 
