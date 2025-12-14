@@ -6,6 +6,7 @@ import 'package:speech_to_text/speech_to_text.dart' as stt;
 import 'package:permission_handler/permission_handler.dart';
 import '../../providers/cognitive_provider.dart';
 import '../../models/cognitive_models.dart';
+import 'package:world_app/data/currency_database.dart';
 
 class FluencyAssessmentScreen extends StatefulWidget {
   const FluencyAssessmentScreen({super.key});
@@ -44,7 +45,6 @@ class _FluencyAssessmentScreenState extends State<FluencyAssessmentScreen> {
   }
 
   Future<void> _initSpeech() async {
-
     setState(() {
       _isInitializing = true;
       _lastError = "";
@@ -61,7 +61,6 @@ class _FluencyAssessmentScreenState extends State<FluencyAssessmentScreen> {
     }
 
     try {
-
       bool available = await _speech.initialize(
         onStatus: (status) {
           debugPrint('[STATUS CALLBACK] Speech Status: $status');
@@ -84,7 +83,6 @@ class _FluencyAssessmentScreenState extends State<FluencyAssessmentScreen> {
           _isSpeechInitialized = true;
           _isInitializing = false;
         });
-
       } else {
         setState(() {
           _lastError = "Speech recognition not available on this device.";
@@ -225,7 +223,8 @@ class _FluencyAssessmentScreenState extends State<FluencyAssessmentScreen> {
       domain: CognitiveDomain.fluenciaAlternant,
       score: score.toInt(),
       rawScore: _detectedWords.length,
-      correctAnswers: matchingCount, // Only count words starting with target letter
+      correctAnswers:
+          matchingCount, // Only count words starting with target letter
       totalAttempts: _detectedWords.length,
       completedAt: DateTime.now(),
       duration: Duration(seconds: _durationSeconds),
@@ -233,8 +232,27 @@ class _FluencyAssessmentScreenState extends State<FluencyAssessmentScreen> {
 
     provider.addAssessmentResult(result);
 
+    int reward = (score / 10).toInt();
+    if (reward > 0) {
+      int currentCurrency = CurrencyStorage.getCurrency();
+      _updateCurrency(currentCurrency + reward);
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('$reward stars earned!'),
+          duration: const Duration(milliseconds: 1200),
+          backgroundColor: Colors.green,
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+    }
+
     // Show Report
     _showResultDialog(result);
+  }
+
+  Future<void> _updateCurrency(int newValue) async {
+    await CurrencyStorage.setCurrency(newValue);
   }
 
   void _showResultDialog(ObjectiveAssessmentResult result) {
@@ -353,7 +371,10 @@ class _FluencyAssessmentScreenState extends State<FluencyAssessmentScreen> {
         Text(
           'e.g. "Pear" ($_targetLetter) -> "Apple" (Fruit) -> "Potato" ($_targetLetter)...',
           textAlign: TextAlign.center,
-          style: const TextStyle(fontStyle: FontStyle.italic, color: Colors.grey),
+          style: const TextStyle(
+            fontStyle: FontStyle.italic,
+            color: Colors.grey,
+          ),
         ),
         const SizedBox(height: 40),
 

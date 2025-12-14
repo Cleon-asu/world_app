@@ -6,6 +6,7 @@ import 'package:speech_to_text/speech_to_text.dart' as stt;
 import 'package:permission_handler/permission_handler.dart';
 import '../../providers/cognitive_provider.dart';
 import '../../models/cognitive_models.dart';
+import 'package:world_app/data/currency_database.dart';
 
 class WorkingMemoryAssessmentScreen extends StatefulWidget {
   const WorkingMemoryAssessmentScreen({super.key});
@@ -244,7 +245,27 @@ class _WorkingMemoryAssessmentScreenState
       context,
       listen: false,
     ).addAssessmentResult(result);
+
+    int reward = (score / 10).toInt();
+    if (reward > 0) {
+      int currentCurrency = CurrencyStorage.getCurrency();
+      _updateCurrency(currentCurrency + reward);
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('$reward stars earned!'),
+          duration: const Duration(milliseconds: 1200),
+          backgroundColor: Colors.green,
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+    }
+
     _showResultDialog(maxLen);
+  }
+
+  Future<void> _updateCurrency(int newValue) async {
+    await CurrencyStorage.setCurrency(newValue);
   }
 
   void _showResultDialog(int length) {

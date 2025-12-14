@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../providers/cognitive_provider.dart';
 import '../../models/cognitive_models.dart';
+import 'package:world_app/data/currency_database.dart';
 
 class ProcessingSpeedScreen extends StatefulWidget {
   const ProcessingSpeedScreen({super.key});
@@ -90,10 +91,15 @@ class _ProcessingSpeedScreenState extends State<ProcessingSpeedScreen> {
     int timePenalty = 10;
 
     int seconds = (_elapsedMillis / 1000.0).toInt();
-    
+
     int maxScore = 100;
-    
-    int score = max(0, (maxScore - (seconds/20).toInt()*timePenalty - _errors*errorPenalty));
+
+    int score = max(
+      0,
+      (maxScore -
+          (seconds / 20).toInt() * timePenalty -
+          _errors * errorPenalty),
+    );
 
     final result = ObjectiveAssessmentResult(
       domain: CognitiveDomain.velocitatProcessament,
@@ -109,7 +115,27 @@ class _ProcessingSpeedScreenState extends State<ProcessingSpeedScreen> {
       context,
       listen: false,
     ).addAssessmentResult(result);
+
+    int reward = (score / 10).toInt();
+    if (reward > 0) {
+      int currentCurrency = CurrencyStorage.getCurrency();
+      _updateCurrency(currentCurrency + reward);
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('$reward stars earned!'),
+          duration: const Duration(milliseconds: 1200),
+          backgroundColor: Colors.green,
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+    }
+
     _showResultDialog(seconds, _errors, score);
+  }
+
+  Future<void> _updateCurrency(int newValue) async {
+    await CurrencyStorage.setCurrency(newValue);
   }
 
   void _showResultDialog(int seconds, int errors, int score) {

@@ -14,13 +14,15 @@ class _ShopPageState extends State<ShopPage> {
   double _startX = 0.0;
   bool _isSwiping = false;
   int _currencyValue = 0;
-  int _worldLevel = 1;
+  int _selectedWorldLevel = 1;
+  List<int> _ownedItems = List.empty();
 
   @override
   void initState() {
     super.initState();
     _loadCurrencyValue();
     _loadWorldLevel();
+    _loadOwnedItems();
   }
 
   @override
@@ -157,7 +159,11 @@ class _ShopPageState extends State<ShopPage> {
         child: Container(
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(12.0),
-            color: Colors.grey[200],
+            color: _ownedItems.contains(index)
+                ? _selectedWorldLevel == index + 1
+                      ? Colors.grey
+                      : Colors.green
+                : Colors.grey[200],
           ),
           child: Column(
             children: [
@@ -185,26 +191,47 @@ class _ShopPageState extends State<ShopPage> {
               Padding(
                 padding: const EdgeInsets.all(12.0),
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Text(
-                      'Item ${index + 1}',
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16.0,
+                    if (_ownedItems.contains(index))
+                      const Icon(
+                        Icons.check_circle,
+                        color: Colors.white,
+                        size: 20,
                       ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
+                    if (!_ownedItems.contains(index))
+                      Text(
+                        'Planet ${index + 1}',
+                        style: const TextStyle(
+                          color: Colors.black,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16.0,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
                     const SizedBox(height: 4.0),
-                    Text(
-                      '\$${((index + 1) * 10).toStringAsFixed(2)}',
-                      style: TextStyle(
-                        fontSize: 14.0,
-                        color: Colors.green[700],
-                        fontWeight: FontWeight.bold,
+                    if (!_ownedItems.contains(index))
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(
+                            Icons.star_border_outlined,
+                            color: Colors.green,
+                            size: 18,
+                          ),
+                          const SizedBox(width: 6),
+                          Text(
+                            ((index + 1) * 10).toStringAsFixed(2),
+                            style: TextStyle(
+                              fontSize: 14.0,
+                              color: Colors.green[700],
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const SizedBox(width: 10),
+                        ],
                       ),
-                    ),
                   ],
                 ),
               ),
@@ -216,19 +243,27 @@ class _ShopPageState extends State<ShopPage> {
   }
 
   void _handleItemClick(int index, BuildContext context) {
-    if (_currencyValue >= (index + 1) * 10) {
-      int newValue = _currencyValue - ((index + 1) * 10);
-      _updateCurrency(newValue);
+    if (_ownedItems.contains(index)) {
+      if (_selectedWorldLevel != index + 1) {
+        _updateSelectedWorldLevel(index + 1);
+      }
+    } else {
+      if (_currencyValue >= (index + 1) * 10) {
+        int newValue = _currencyValue - ((index + 1) * 10);
+        _updateCurrency(newValue);
 
-      _updateWorldLevel(index + 1);
+        _updateSelectedWorldLevel(index + 1);
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Item purchased successfully'),
-          duration: const Duration(milliseconds: 500),
-          behavior: SnackBarBehavior.floating,
-        ),
-      );
+        _purchaseItem(index);
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Item purchased successfully'),
+            duration: const Duration(milliseconds: 500),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
     }
   }
 
@@ -253,30 +288,34 @@ class _ShopPageState extends State<ShopPage> {
   Future<void> _updateCurrency(int newValue) async {
     await CurrencyStorage.setCurrency(newValue);
 
-    // Show snackbar feedback
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: const Text('Currency updated!'),
-        duration: const Duration(milliseconds: 800),
-        backgroundColor: Colors.green,
-        behavior: SnackBarBehavior.floating,
-      ),
-    );
-
     setState(() {
       _currencyValue = newValue;
     });
   }
 
-  void _loadWorldLevel() {
-    final value = CurrencyStorage.getWorldLevel();
+  Future<void> _purchaseItem(int index) async {
+    await CurrencyStorage.addOwnedItem(index);
+
+    _loadOwnedItems();
+  }
+
+  void _loadOwnedItems() {
+    final value = CurrencyStorage.getOwnedItems();
     setState(() {
-      _worldLevel = value;
+      _ownedItems = value;
     });
   }
 
-  Future<void> _updateWorldLevel(int newValue) async {
-    await CurrencyStorage.setWorldLevel(newValue);
+  void _loadWorldLevel() {
+    final value = CurrencyStorage.getSelectedWorldLevel();
+    setState(() {
+      _selectedWorldLevel = value;
+    });
+  }
+
+  Future<void> _updateSelectedWorldLevel(int newValue) async {
+    await CurrencyStorage.setSelectedWorldLevel(newValue);
+    _loadWorldLevel();
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(

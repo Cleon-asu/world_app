@@ -125,7 +125,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _loadWorldLevel() {
-    final value = CurrencyStorage.getWorldLevel();
+    final value = CurrencyStorage.getSelectedWorldLevel();
     setState(() {
       _worldLevel = value;
     });
